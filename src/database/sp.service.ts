@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { dbPool } from './database';
-import { RouteParamtypes } from '@nestjs/common/enums/route-paramtypes.enum';
 
 @Injectable()
 export class StoredProcedureService {
@@ -8,11 +7,11 @@ export class StoredProcedureService {
     const connection = await dbPool.getConnection();
     try {
       const placeholders = params.map(() => '?').join(',');
-      const [rows] = await connection.query(
+      const [result] = await connection.query(
         `CALL ${procedureName}(${placeholders})`,
-        RouteParamtypes,
+        params,
       );
-      return rows;
+      return Array.isArray(result) ? result[0] : result;
     } finally {
       connection.release();
     }

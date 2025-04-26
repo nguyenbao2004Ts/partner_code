@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
 import { PartnerService } from './partner.service';
 import { PartnerController } from './partner.controller';
+import { PartnerRepository } from './reponsitory/partner.repository';
 
 @Module({
   controllers: [PartnerController],
-  providers: [PartnerService],
+  providers: [PartnerService, PartnerRepository],
 })
 export class PartnerModule {}
