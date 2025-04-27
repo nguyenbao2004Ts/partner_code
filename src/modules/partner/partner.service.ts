@@ -6,10 +6,71 @@ import { PartnerRepository } from './reponsitory/partner.repository';
 export class PartnerService {
   constructor(private readonly partnerRepo: PartnerRepository) {}
 
-  async getCategoryList(name: string) {
-    return this.partnerRepo.getCategoryList(name);
+  async getCategoryList(
+    searchId: string,
+    searchName: string,
+    searchFromDate: string | null,
+    searchToDate: string | null,
+    sortColumn: string,
+    sortDirection: string,
+    page: number,
+    pageSize: number,
+  ) {
+    const sort = `${sortColumn},${sortDirection}`;
+    return this.partnerRepo.getCategoryList(
+      searchId,
+      searchName,
+      searchFromDate,
+      searchToDate,
+      sort,
+      page,
+      pageSize,
+    );
   }
-  async getServiceList(parentId: string, name: string) {
-    return this.partnerRepo.getServiceList(parentId, name);
+
+  async getServiceList(
+    searchId: string,
+    searchNameCategory: string,
+    searchName: string,
+    searchFromDate: string | null,
+    searchToDate: string | null,
+    sort: string,
+    page: number,
+    pageSize: number,
+  ) {
+    return this.partnerRepo.getServiceList(
+      searchId,
+      searchNameCategory,
+      searchName,
+      searchFromDate,
+      searchToDate,
+      sort,
+      page,
+      pageSize,
+    );
+  }
+
+  async getPartnerList(
+    searchId: string,
+    searchNameCategory: string,
+    searchNameService: string,
+    searchName: string,
+    searchFromDate: string | null,
+    searchToDate: string | null,
+    sort: string,
+    page: number,
+    pageSize: number,
+  ) {
+    return this.partnerRepo.getPartnerList(
+      searchId,
+      searchNameCategory,
+      searchNameService,
+      searchName,
+      searchFromDate,
+      searchToDate,
+      sort,
+      page,
+      pageSize,
+    );
   }
 }
