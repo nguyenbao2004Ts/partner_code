@@ -11,6 +11,7 @@ import {
   ValidatorConstraintInterface,
   IsDefined,
 } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 @ValidatorConstraint({ name: 'noSqlInjection', async: false })
 export class NoSqlInjectionConstraint implements ValidatorConstraintInterface {
@@ -46,6 +47,7 @@ export class NoSqlInjectionConstraint implements ValidatorConstraintInterface {
 }
 
 export class CreateUserDto {
+  @ApiProperty({ example: 'johndoe', description: 'Tên người dùng' })
   @IsString({ message: 'Tên phải là chuỗi' })
   @IsNotEmpty({ message: 'Tên không được để trống' })
   @MinLength(3, { message: 'Tên phải có ít nhất 3 ký tự' })
@@ -57,6 +59,10 @@ export class CreateUserDto {
   })
   username: string;
 
+  @ApiProperty({
+    example: 'johndoe@example.com',
+    description: 'Địa chỉ email người dùng',
+  })
   @IsEmail({}, { message: 'Email không hợp lệ' })
   @IsNotEmpty({ message: 'Email không được để trống' })
   @Validate(NoSqlInjectionConstraint, {
@@ -64,6 +70,7 @@ export class CreateUserDto {
   })
   email: string;
 
+  @ApiProperty({ example: 'StrongPass123', description: 'Mật khẩu người dùng' })
   @IsDefined({ message: 'Mật khẩu không được thiếu' })
   @IsNotEmpty({ message: 'Mật khẩu không được để trống' })
   @IsString({ message: 'Mật khẩu phải là chuỗi' })

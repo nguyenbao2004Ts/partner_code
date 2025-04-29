@@ -1,5 +1,5 @@
 import { Module, Global } from '@nestjs/common';
-import { StoredProcedureService } from './sp.service';
+import { StoredProcedureService } from './database-Sp.service';
 
 @Global()
 @Module({

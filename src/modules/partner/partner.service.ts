@@ -1,76 +1,161 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 import { Injectable } from '@nestjs/common';
-import { PartnerRepository } from './reponsitory/partner.repository';
+import { GetCategoryListDto } from './dto/get-category-list.dto';
+import { GetServiceListDto } from './dto/get-service-list.dto';
+import { GetPartnerListDto } from './dto/get-partner-list.dto';
+import { InsertCategoryDto } from './dto/insert-category.dto';
+import { InsertServiceDto } from './dto/insert-service.dto';
+import { InsertPartnerDto } from './dto/insert-partner.dto';
+import { UpdateCategoryDto } from './dto/update-category.dto';
+import { GetCategoryRepository } from './repositories/repository-get-category/get-category.repository';
+import { GetServiceRepository } from './repositories/repository-get-service/get-service.repository';
+import { GetPartnerRepository } from './repositories/repository-get-partner/get-partner.repository';
+import { InsertCategoryRepository } from './repositories/repository-insert-category/insert-category.repository';
+import { InsertServiceRepository } from './repositories/repository-insert-service/insert-service.repository';
+import { InsertPartnerRepository } from './repositories/repository-insert-partner/insert-partner.repository';
+import { UpdateCategoryRepository } from './repositories/repository-update-category/update-category.repository';
+import { UpdateServiceRepository } from './repositories/repository-update-service/update-service.repository';
+import { UpdateServiceDto } from './dto/update-service.dto';
+import { UpdatePartnerDto } from './dto/update-partner.dto';
+import { UpdatePartnerRepository } from './repositories/repository-update-partner/update-partner-repository';
+import { DeleteCategoryRepository } from './repositories/repository-delete-category/delete-category.repository';
+import { DeleteServiceRepository } from './repositories/repository-delete-service/delete-service.repository';
+import { DeletePartnerRepository } from './repositories/repository-delete-partner/delete-partner.repository';
 
 @Injectable()
+@Injectable()
 export class PartnerService {
-  constructor(private readonly partnerRepo: PartnerRepository) {}
+  constructor(
+    private readonly categoryRepo: GetCategoryRepository,
+    private readonly serviceRepo: GetServiceRepository,
+    private readonly partnerRepo: GetPartnerRepository,
+    private readonly insertCategoryRepo: InsertCategoryRepository,
+    private readonly insertServiceRepo: InsertServiceRepository,
+    private readonly insertPartnerRepo: InsertPartnerRepository,
+    private readonly updateCategoryRepo: UpdateCategoryRepository,
+    private readonly updateServiceRepo: UpdateServiceRepository,
+    private readonly updatePartnerRepo: UpdatePartnerRepository,
+    private readonly deleteCategoryRepo: DeleteCategoryRepository,
+    private readonly deleteServiceRepo: DeleteServiceRepository,
+    private readonly deletePartnerRepo: DeletePartnerRepository,
+  ) {}
 
-  async getCategoryList(
-    searchId: string,
-    searchName: string,
-    searchFromDate: string | null,
-    searchToDate: string | null,
-    sortColumn: string,
-    sortDirection: string,
-    page: number,
-    pageSize: number,
-  ) {
-    const sort = `${sortColumn},${sortDirection}`;
-    return this.partnerRepo.getCategoryList(
-      searchId,
-      searchName,
-      searchFromDate,
-      searchToDate,
-      sort,
-      page,
-      pageSize,
+  async getCategoryList(dto: GetCategoryListDto) {
+    return this.categoryRepo.getCategoryList(
+      dto.searchId || 'all',
+      dto.searchName || 'all',
+      dto.searchFromDate,
+      dto.searchToDate,
+      dto.page || 1,
+      dto.pageSize || 10,
+      dto.sort || 'ID,ASC',
     );
   }
-
-  async getServiceList(
-    searchId: string,
-    searchNameCategory: string,
-    searchName: string,
-    searchFromDate: string | null,
-    searchToDate: string | null,
-    sort: string,
-    page: number,
-    pageSize: number,
-  ) {
-    return this.partnerRepo.getServiceList(
-      searchId,
-      searchNameCategory,
-      searchName,
-      searchFromDate,
-      searchToDate,
-      sort,
-      page,
-      pageSize,
+  async getServiceList(dto: GetServiceListDto) {
+    return this.serviceRepo.getServiceList(
+      dto.searchId || 'all',
+      dto.searchName || 'all',
+      dto.searchNameCategory || 'all',
+      dto.searchFromDate,
+      dto.searchToDate,
+      dto.page || 1,
+      dto.pageSize || 10,
+      dto.sort || 'ID,ASC',
     );
   }
-
-  async getPartnerList(
-    searchId: string,
-    searchNameCategory: string,
-    searchNameService: string,
-    searchName: string,
-    searchFromDate: string | null,
-    searchToDate: string | null,
-    sort: string,
-    page: number,
-    pageSize: number,
-  ) {
+  async getPartnerList(dto: GetPartnerListDto) {
     return this.partnerRepo.getPartnerList(
-      searchId,
-      searchNameCategory,
-      searchNameService,
-      searchName,
-      searchFromDate,
-      searchToDate,
-      sort,
-      page,
-      pageSize,
+      dto.searchId || 'all',
+      dto.searchName || 'all',
+      dto.searchNameService || 'all',
+      dto.searchNameCategory || 'all',
+      dto.searchFromDate,
+      dto.searchToDate,
+      dto.page || 1,
+      dto.pageSize || 10,
+      dto.sort || 'ID,ASC',
     );
+  }
+  async insertCategory(dto: InsertCategoryDto) {
+    return this.insertCategoryRepo.insertCategory(
+      dto.dataCode,
+      dto.dataTitle,
+      dto.dataImage || null,
+      dto.dataDesc || null,
+      dto.referralName || null,
+      dto.referralEmail || null,
+      dto.referralPhone || null,
+    );
+  }
+  async insertService(dto: InsertServiceDto) {
+    return this.insertServiceRepo.insertService(
+      dto.dataCode,
+      dto.dataTitle,
+      dto.parentCategoryId,
+      dto.dataImage || null,
+      dto.dataDesc || null,
+      dto.referralName || null,
+      dto.referralEmail || null,
+      dto.referralPhone || null,
+    );
+  }
+  async insertPartner(dto: InsertPartnerDto) {
+    return this.insertPartnerRepo.insertPartner(
+      dto.dataCode,
+      dto.dataTitle,
+      dto.parentServiceId,
+      dto.dataImage || null,
+      dto.dataDesc || null,
+      dto.referralName || null,
+      dto.referralEmail || null,
+      dto.referralPhone || null,
+    );
+  }
+  async updateCategory(dto: UpdateCategoryDto) {
+    return this.updateCategoryRepo.updateCategory(
+      dto.id,
+      dto.dataCode || null,
+      dto.dataTitle,
+      dto.dataImage || null,
+      dto.dataDesc || null,
+      dto.referralName || null,
+      dto.referralEmail || null,
+      dto.referralPhone || null,
+    );
+  }
+  async updateService(dto: UpdateServiceDto) {
+    return this.updateServiceRepo.updateService(
+      dto.id,
+      dto.dataCode || null,
+      dto.dataTitle,
+      dto.dataParentId || '',
+      dto.dataImage || null,
+      dto.dataDesc || null,
+      dto.referralName || null,
+      dto.referralEmail || null,
+      dto.referralPhone || null,
+    );
+  }
+  async updatePartner(dto: UpdatePartnerDto) {
+    return this.updatePartnerRepo.updatePartner(
+      dto.id,
+      dto.dataCode || null,
+      dto.dataTitle,
+      dto.dataParentId || '',
+      dto.dataImage || null,
+      dto.dataDesc || null,
+      dto.referralName || null,
+      dto.referralEmail || null,
+      dto.referralPhone || null,
+    );
+  }
+  async deleteCategory(id: number) {
+    return this.deleteCategoryRepo.deleteCategory(id);
+  }
+  async deleteService(id: number) {
+    return this.deleteServiceRepo.deleteService(id);
+  }
+  async deletePartner(id: number) {
+    return this.deletePartnerRepo.deletePartner(id);
   }
 }
