@@ -1,15 +1,8 @@
 import { Type } from 'class-transformer';
-import {
-  IsEmail,
-  IsInt,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-} from 'class-validator';
+import { IsInt, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { ApiPropertyOptional, ApiProperty } from '@nestjs/swagger';
 
 export class UpdateServiceDto {
-  @ApiPropertyOptional({ description: 'ID of the service' })
   @IsInt()
   @IsOptional()
   @Type(() => Number)
@@ -47,7 +40,7 @@ export class UpdateServiceDto {
 
   @ApiPropertyOptional({ description: 'Referral email address' })
   @IsOptional()
-  @IsEmail()
+  @IsString()
   referralEmail?: string;
 
   @ApiPropertyOptional({ description: 'Referral phone number' })

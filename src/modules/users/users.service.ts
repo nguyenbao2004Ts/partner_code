@@ -1,30 +1,34 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import User from 'src/modules/users/entity/User';
-import { Repository } from 'typeorm';
+import { UserCreateRepository } from './repositories/repository-create-user/user-create.repository';
+import { UserFindRepository } from './repositories/repository-find-user/user-find.repository';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
+    private readonly userCreateRepo: UserCreateRepository,
+    private readonly userFindRepo: UserFindRepository,
   ) {}
-  async create(
-    userData: Partial<User>,
-  ): Promise<{ message: string; user?: User }> {
+
+  async create(userData: {
+    username: string;
+    email: string;
+    password: string;
+  }) {
     try {
-      const user = this.userRepository.create(userData);
-      user.created_at = new Date();
-      user.updated_at = new Date();
-      const hashedPassword = await bcrypt.hash(user.password, 10);
-      user.password = hashedPassword;
-      const savedUser = await this.userRepository.save(user);
+      const hashedPassword = await bcrypt.hash(userData.password, 10);
+      await this.userCreateRepo.createUser(
+        userData.username,
+        userData.email,
+        hashedPassword,
+      );
 
       return {
         message: 'Đăng ký thành công',
-        user: savedUser,
       };
     } catch (error) {
       if (error.code === 'ER_DUP_ENTRY') {
@@ -33,20 +37,18 @@ export class UsersService {
       throw new HttpException('Lỗi hệ thống', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
-  findByEmail(email: string) {
-    const user = this.userRepository.findOneBy({ email: email });
-    return user;
+
+  async findByEmail(email: string) {
+    return await this.userFindRepo.findByEmail(email);
   }
 
   async validateUser(email: string, password: string) {
     const user = await this.findByEmail(email);
-    if (!user) {
-      return null;
-    }
-    const status = bcrypt.compareSync(password, user.password);
-    if (!status) {
-      return null;
-    }
+    if (!user) return null;
+
+    const isValid = await bcrypt.compare(password, user.password);
+    if (!isValid) return null;
+
     return user;
   }
 }

@@ -4,11 +4,15 @@ import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import User from 'src/modules/users/entity/User';
+import { UserCreateRepository } from './repositories/repository-create-user/user-create.repository';
+import { UserFindRepository } from './repositories/repository-find-user/user-find.repository';
 
 @Module({
   controllers: [UsersController],
   providers: [
     UsersService,
+    UserCreateRepository,
+    UserFindRepository,
     {
       provide: APP_PIPE,
       useClass: ValidationPipe,

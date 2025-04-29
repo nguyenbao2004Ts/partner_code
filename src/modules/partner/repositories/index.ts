@@ -1,0 +1,12 @@
+export { GetCategoryRepository } from './repository-get-category/get-category.repository';
+export { GetPartnerRepository } from './repository-get-partner/get-partner.repository';
+export { GetServiceRepository } from './repository-get-service/get-service.repository';
+export { InsertCategoryRepository } from './repository-insert-category/insert-category.repository';
+export { InsertPartnerRepository } from './repository-insert-partner/insert-partner.repository';
+export { InsertServiceRepository } from './repository-insert-service/insert-service.repository';
+export { UpdateCategoryRepository } from './repository-update-category/update-category.repository';
+export { UpdatePartnerRepository } from './repository-update-partner/update-partner-repository';
+export { UpdateServiceRepository } from './repository-update-service/update-service.repository';
+export { DeleteCategoryRepository } from './repository-delete-category/delete-category.repository';
+export { DeletePartnerRepository } from './repository-delete-partner/delete-partner.repository';
+export { DeleteServiceRepository } from './repository-delete-service/delete-service.repository';

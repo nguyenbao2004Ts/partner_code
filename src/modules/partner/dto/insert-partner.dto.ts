@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class InsertPartnerDto {
@@ -48,7 +48,7 @@ export class InsertPartnerDto {
     required: false,
   })
   @IsOptional()
-  @IsEmail()
+  @IsString()
   referralEmail?: string;
 
   @ApiProperty({

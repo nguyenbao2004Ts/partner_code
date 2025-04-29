@@ -63,7 +63,7 @@ export class AuthController {
     description: 'Đăng nhập thành công, trả về access_token',
   })
   @ApiResponse({ status: 401, description: 'Sai email hoặc mật khẩu' })
-  login(@Request() req: any) {
+  async login(@Request() req: any) {
     return this.authService.login(req.user);
   }
   @UseGuards(JwtAuthGuard)

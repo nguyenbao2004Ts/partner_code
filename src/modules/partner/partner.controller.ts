@@ -8,17 +8,20 @@ import {
   Patch,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { PartnerService } from './partner.service';
-import { GetCategoryListDto } from './dto/get-category-list.dto';
-import { GetServiceListDto } from './dto/get-service-list.dto';
-import { GetPartnerListDto } from './dto/get-partner-list.dto';
-import { InsertCategoryDto } from './dto/insert-category.dto';
-import { InsertServiceDto } from './dto/insert-service.dto';
-import { InsertPartnerDto } from './dto/insert-partner.dto';
-import { UpdateCategoryDto } from './dto/update-category.dto';
-import { UpdateServiceDto } from './dto/update-service.dto';
-import { UpdatePartnerDto } from './dto/update-partner.dto';
+import {
+  GetCategoryListDto,
+  GetServiceListDto,
+  GetPartnerListDto,
+  InsertCategoryDto,
+  InsertServiceDto,
+  InsertPartnerDto,
+  UpdateCategoryDto,
+  UpdateServiceDto,
+  UpdatePartnerDto,
+} from './dto';
 import {
   ApiOperation,
   ApiResponse,
@@ -26,16 +29,16 @@ import {
   ApiBody,
   ApiParam,
   ApiOkResponse,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
-
-// import { AuthGuard } from '@nestjs/passport';
-
+import { JwtAuthGuard } from 'src/guards/jwt-auth.guards';
+@ApiBearerAuth('access-token')
 @Controller('partner/v1')
 @ApiTags('Partner')
 export class PartnerController {
   constructor(private readonly partnerService: PartnerService) {}
-
-  // @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
   @Get('/get-category-list')
   @ApiOperation({ summary: 'Get a list of categories' })
   @ApiResponse({
@@ -47,6 +50,8 @@ export class PartnerController {
     return this.partnerService.getCategoryList(query);
   }
 
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
   @Get('/get-service-list')
   @ApiOperation({ summary: 'Get a list of services' })
   @ApiResponse({
@@ -57,6 +62,8 @@ export class PartnerController {
   async getServiceList(@Query() query: GetServiceListDto) {
     return this.partnerService.getServiceList(query);
   }
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
   @Get('/get-partner-list')
   @ApiOperation({ summary: 'Get a list of partners' })
   @ApiResponse({
@@ -67,6 +74,8 @@ export class PartnerController {
   async getPartnerList(@Query() query: GetPartnerListDto) {
     return this.partnerService.getPartnerList(query);
   }
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
   @Post('/insert-category')
   @ApiOperation({ summary: 'Insert a new category' })
   @ApiResponse({ status: 201, description: 'Category successfully created' })
@@ -75,6 +84,8 @@ export class PartnerController {
   async insertCategory(@Body() body: InsertCategoryDto) {
     return this.partnerService.insertCategory(body);
   }
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
   @Post('/insert-service')
   @ApiOperation({ summary: 'Insert a new service' })
   @ApiResponse({ status: 201, description: 'Service successfully created' })
@@ -83,6 +94,8 @@ export class PartnerController {
   async insertService(@Body() body: InsertServiceDto) {
     return this.partnerService.insertService(body);
   }
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
   @Post('/insert-partner')
   @ApiOperation({ summary: 'Insert a new partner' })
   @ApiResponse({ status: 201, description: 'Partner successfully created' })
@@ -91,6 +104,8 @@ export class PartnerController {
   async insertPartner(@Body() body: InsertPartnerDto) {
     return this.partnerService.insertPartner(body);
   }
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
   @Patch('/category/:id')
   @ApiOperation({ summary: 'Update a category' })
   @ApiParam({
@@ -106,6 +121,8 @@ export class PartnerController {
   ) {
     return this.partnerService.updateCategory({ ...body, id });
   }
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
   @Patch('/service/:id')
   @ApiOperation({ summary: 'Update a service' })
   @ApiParam({
@@ -118,6 +135,8 @@ export class PartnerController {
   async updateService(@Param('id') id: number, @Body() body: UpdateServiceDto) {
     return this.partnerService.updateService({ ...body, id });
   }
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
   @Patch('/partner/:id')
   @ApiOperation({ summary: 'Update a partner' })
   @ApiParam({
@@ -130,6 +149,8 @@ export class PartnerController {
   async updatePartner(@Param('id') id: number, @Body() body: UpdatePartnerDto) {
     return this.partnerService.updatePartner({ ...body, id });
   }
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
   @Delete('/category/:id')
   @ApiOperation({ summary: 'Delete a category by ID' })
   @ApiParam({
@@ -141,6 +162,8 @@ export class PartnerController {
   async deleteCategory(@Param('id') id: number) {
     return this.partnerService.deleteCategory(id);
   }
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
   @Delete('/service/:id')
   @ApiOperation({ summary: 'Delete a service by ID' })
   @ApiParam({
@@ -152,6 +175,8 @@ export class PartnerController {
   async deleteService(@Param('id') id: number) {
     return this.partnerService.deleteService(id);
   }
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
   @Delete('/partner/:id')
   @ApiOperation({ summary: 'Delete a partner by ID' })
   @ApiParam({

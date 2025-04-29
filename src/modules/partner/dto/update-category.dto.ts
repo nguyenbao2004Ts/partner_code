@@ -1,16 +1,9 @@
 // update-category.dto.ts
-import {
-  IsEmail,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-  IsInt,
-} from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, IsInt } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiPropertyOptional, ApiProperty } from '@nestjs/swagger';
 
 export class UpdateCategoryDto {
-  @ApiPropertyOptional({ description: 'ID of the category' })
   @IsInt()
   @IsOptional()
   @Type(() => Number)
@@ -43,7 +36,7 @@ export class UpdateCategoryDto {
 
   @ApiPropertyOptional({ description: 'Referral email address' })
   @IsOptional()
-  @IsEmail()
+  @IsString()
   referralEmail?: string;
 
   @ApiPropertyOptional({ description: 'Referral phone number' })

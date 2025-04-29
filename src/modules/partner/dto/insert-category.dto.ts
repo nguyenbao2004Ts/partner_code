@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 export class InsertCategoryDto {
   @ApiProperty({ description: 'The unique code of the category' })
@@ -40,7 +40,7 @@ export class InsertCategoryDto {
     required: false,
   })
   @IsOptional()
-  @IsEmail()
+  @IsString()
   referralEmail?: string;
 
   @ApiProperty({

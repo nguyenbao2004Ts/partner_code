@@ -7,21 +7,22 @@ import { InsertCategoryDto } from './dto/insert-category.dto';
 import { InsertServiceDto } from './dto/insert-service.dto';
 import { InsertPartnerDto } from './dto/insert-partner.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
-import { GetCategoryRepository } from './repositories/repository-get-category/get-category.repository';
-import { GetServiceRepository } from './repositories/repository-get-service/get-service.repository';
-import { GetPartnerRepository } from './repositories/repository-get-partner/get-partner.repository';
-import { InsertCategoryRepository } from './repositories/repository-insert-category/insert-category.repository';
-import { InsertServiceRepository } from './repositories/repository-insert-service/insert-service.repository';
-import { InsertPartnerRepository } from './repositories/repository-insert-partner/insert-partner.repository';
-import { UpdateCategoryRepository } from './repositories/repository-update-category/update-category.repository';
-import { UpdateServiceRepository } from './repositories/repository-update-service/update-service.repository';
 import { UpdateServiceDto } from './dto/update-service.dto';
 import { UpdatePartnerDto } from './dto/update-partner.dto';
-import { UpdatePartnerRepository } from './repositories/repository-update-partner/update-partner-repository';
-import { DeleteCategoryRepository } from './repositories/repository-delete-category/delete-category.repository';
-import { DeleteServiceRepository } from './repositories/repository-delete-service/delete-service.repository';
-import { DeletePartnerRepository } from './repositories/repository-delete-partner/delete-partner.repository';
-
+import {
+  GetCategoryRepository,
+  GetServiceRepository,
+  GetPartnerRepository,
+  InsertCategoryRepository,
+  InsertServiceRepository,
+  InsertPartnerRepository,
+  UpdateCategoryRepository,
+  UpdateServiceRepository,
+  UpdatePartnerRepository,
+  DeleteCategoryRepository,
+  DeleteServiceRepository,
+  DeletePartnerRepository,
+} from './repositories';
 @Injectable()
 @Injectable()
 export class PartnerService {
