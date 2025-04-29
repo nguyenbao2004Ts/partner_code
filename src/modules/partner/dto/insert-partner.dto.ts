@@ -5,19 +5,19 @@ export class InsertPartnerDto {
   @ApiProperty({ description: 'The unique code of the partner' })
   @IsNotEmpty()
   @IsString()
-  dataCode: string;
+  data_code: string;
 
   @ApiProperty({ description: 'The title of the partner' })
   @IsNotEmpty()
   @IsString()
-  dataTitle: string;
+  data_title: string;
 
   @ApiProperty({
     description: 'The service ID of the parent service for the partner',
   })
   @IsNotEmpty()
   @IsString()
-  parentServiceId: string;
+  parent_service_id: string;
 
   @ApiProperty({
     description: 'The image URL for the partner',
@@ -25,7 +25,7 @@ export class InsertPartnerDto {
   })
   @IsOptional()
   @IsString()
-  dataImage?: string;
+  data_image?: string;
 
   @ApiProperty({
     description: 'The description of the partner',
@@ -33,7 +33,7 @@ export class InsertPartnerDto {
   })
   @IsOptional()
   @IsString()
-  dataDesc?: string;
+  data_desc?: string;
 
   @ApiProperty({
     description: 'The referral name for the partner',
@@ -41,7 +41,7 @@ export class InsertPartnerDto {
   })
   @IsOptional()
   @IsString()
-  referralName?: string;
+  referral_name?: string;
 
   @ApiProperty({
     description: 'The referral email for the partner',
@@ -49,7 +49,7 @@ export class InsertPartnerDto {
   })
   @IsOptional()
   @IsString()
-  referralEmail?: string;
+  referral_email?: string;
 
   @ApiProperty({
     description: 'The referral phone for the partner',
@@ -57,5 +57,5 @@ export class InsertPartnerDto {
   })
   @IsOptional()
   @IsString()
-  referralPhone?: string;
+  referral_phone?: string;
 }

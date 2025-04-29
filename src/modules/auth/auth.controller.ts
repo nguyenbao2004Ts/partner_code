@@ -34,10 +34,10 @@ export class AuthController {
   ) {}
 
   @Post('register')
-  @ApiOperation({ summary: 'Đăng ký người dùng mới' })
+  @ApiOperation({ summary: 'New User Registration' })
   @ApiBody({ type: CreateUserDto })
-  @ApiResponse({ status: 201, description: 'Đăng ký thành công' })
-  @ApiResponse({ status: 400, description: 'Dữ liệu không hợp lệ' })
+  @ApiResponse({ status: 201, description: 'Registration successful' })
+  @ApiResponse({ status: 400, description: 'Invalid data' })
   @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
   async register(@Body() userData: CreateUserDto) {
     const result = await this.userService.create(userData);
@@ -48,30 +48,30 @@ export class AuthController {
   }
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  @ApiOperation({ summary: 'Đăng nhập hệ thống' })
+  @ApiOperation({ summary: 'Login to the system' })
   @ApiBody({
     schema: {
       type: 'object',
       properties: {
-        email: { type: 'string', example: 'johndoe@example.com' },
-        password: { type: 'string', example: 'StrongPass123' },
+        email: { type: 'string', example: 'johndoe@gmail.com' },
+        password: { type: 'string', example: '123456Ts' },
       },
     },
   })
   @ApiResponse({
     status: 200,
-    description: 'Đăng nhập thành công, trả về access_token',
+    description: 'Login successful, return access_token',
   })
-  @ApiResponse({ status: 401, description: 'Sai email hoặc mật khẩu' })
+  @ApiResponse({ status: 401, description: 'Wrong email or password' })
   async login(@Request() req: any) {
     return this.authService.login(req.user);
   }
   @UseGuards(JwtAuthGuard)
   @Get('profile')
-  @ApiOperation({ summary: 'Lấy thông tin người dùng từ access_token' })
+  @ApiOperation({ summary: 'Get user information from access_token' })
   @ApiBearerAuth()
-  @ApiResponse({ status: 200, description: 'Thông tin người dùng' })
-  @ApiResponse({ status: 401, description: 'Token không hợp lệ hoặc hết hạn' })
+  @ApiResponse({ status: 200, description: 'User information' })
+  @ApiResponse({ status: 401, description: 'Token is invalid or expired' })
   getProfile(@Request() req: any) {
     return req.user;
   }

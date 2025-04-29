@@ -11,40 +11,40 @@ export class UpdateServiceDto {
   @ApiPropertyOptional({ description: 'Code of the service' })
   @IsOptional()
   @IsString()
-  dataCode?: string;
+  data_code?: string;
 
   @ApiProperty({ description: 'Title of the service' })
   @IsNotEmpty()
   @IsString()
-  dataTitle: string;
+  data_title: string;
 
   @ApiPropertyOptional({ description: 'Parent ID related to category' })
   @IsOptional()
   @IsString()
-  dataParentId?: string;
+  data_parent_id?: string;
 
   @ApiPropertyOptional({ description: 'Image URL of the service' })
   @IsOptional()
   @IsString()
-  dataImage?: string;
+  data_image?: string;
 
   @ApiPropertyOptional({ description: 'Description of the service' })
   @IsOptional()
   @IsString()
-  dataDesc?: string;
+  data_desc?: string;
 
   @ApiPropertyOptional({ description: 'Referral name' })
   @IsOptional()
   @IsString()
-  referralName?: string;
+  referral_name?: string;
 
   @ApiPropertyOptional({ description: 'Referral email address' })
   @IsOptional()
   @IsString()
-  referralEmail?: string;
+  referral_email?: string;
 
   @ApiPropertyOptional({ description: 'Referral phone number' })
   @IsOptional()
   @IsString()
-  referralPhone?: string;
+  referral_phone?: string;
 }

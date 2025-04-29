@@ -2,9 +2,11 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+// import { LowercaseInterceptor } from './common/interceptors/lowercase.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  // app.useGlobalInterceptors(new LowercaseInterceptor());
 
   const config = new DocumentBuilder()
     .setTitle('Portal Dev')
@@ -23,6 +25,12 @@ async function bootstrap() {
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, documentFactory);
+
+  app.enableCors({
+    origin: 'http://localhost:3001',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
+  });
 
   app.useGlobalPipes(
     new ValidationPipe({

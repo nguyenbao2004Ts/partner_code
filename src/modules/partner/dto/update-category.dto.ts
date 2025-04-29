@@ -12,35 +12,35 @@ export class UpdateCategoryDto {
   @ApiPropertyOptional({ description: 'Code of the category' })
   @IsOptional()
   @IsString()
-  dataCode?: string;
+  data_code?: string;
 
   @ApiProperty({ description: 'Title of the category' })
   @IsNotEmpty()
   @IsString()
-  dataTitle: string;
+  data_title: string;
 
   @ApiPropertyOptional({ description: 'Image URL of the category' })
   @IsOptional()
   @IsString()
-  dataImage?: string;
+  data_image?: string;
 
   @ApiPropertyOptional({ description: 'Description of the category' })
   @IsOptional()
   @IsString()
-  dataDesc?: string;
+  data_desc?: string;
 
   @ApiPropertyOptional({ description: 'Referral name' })
   @IsOptional()
   @IsString()
-  referralName?: string;
+  referral_name?: string;
 
   @ApiPropertyOptional({ description: 'Referral email address' })
   @IsOptional()
   @IsString()
-  referralEmail?: string;
+  referral_email?: string;
 
   @ApiPropertyOptional({ description: 'Referral phone number' })
   @IsOptional()
   @IsString()
-  referralPhone?: string;
+  referral_phone?: string;
 }

@@ -4,12 +4,12 @@ export class InsertCategoryDto {
   @ApiProperty({ description: 'The unique code of the category' })
   @IsNotEmpty()
   @IsString()
-  dataCode: string;
+  data_code: string;
 
   @ApiProperty({ description: 'The title of the category' })
   @IsNotEmpty()
   @IsString()
-  dataTitle: string;
+  data_title: string;
 
   @ApiProperty({
     description: 'The image URL for the category',
@@ -17,7 +17,7 @@ export class InsertCategoryDto {
   })
   @IsOptional()
   @IsString()
-  dataImage?: string;
+  data_image?: string;
 
   @ApiProperty({
     description: 'The description of the category',
@@ -25,7 +25,7 @@ export class InsertCategoryDto {
   })
   @IsOptional()
   @IsString()
-  dataDesc?: string;
+  data_desc?: string;
 
   @ApiProperty({
     description: 'The referral name for the category',
@@ -33,7 +33,7 @@ export class InsertCategoryDto {
   })
   @IsOptional()
   @IsString()
-  referralName?: string;
+  referral_name?: string;
 
   @ApiProperty({
     description: 'The referral email for the category',
@@ -41,7 +41,7 @@ export class InsertCategoryDto {
   })
   @IsOptional()
   @IsString()
-  referralEmail?: string;
+  referral_email?: string;
 
   @ApiProperty({
     description: 'The referral phone for the category',
@@ -49,5 +49,5 @@ export class InsertCategoryDto {
   })
   @IsOptional()
   @IsString()
-  referralPhone?: string;
+  referral_phone?: string;
 }

@@ -4,29 +4,31 @@ import { IsString, IsOptional, IsInt, IsDateString } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class GetCategoryListDto {
-  @ApiPropertyOptional({ description: 'ID of the category to search for' })
+  @ApiPropertyOptional({
+    description: 'Seach: id, name, create_at_from, create_at_to',
+  })
   @IsOptional()
   @IsString()
-  searchId?: string;
+  id?: string;
 
   @ApiPropertyOptional({ description: 'Name of the category to search for' })
   @IsOptional()
   @IsString()
-  searchName?: string;
+  name?: string;
 
   @ApiPropertyOptional({
-    description: 'From date for filtering categories (ISO format)',
+    description: 'From date for filtering categories',
   })
   @IsOptional()
   @IsDateString()
-  searchFromDate?: string;
+  create_at_from?: string;
 
   @ApiPropertyOptional({
-    description: 'To date for filtering categories (ISO format)',
+    description: 'To date for filtering categories',
   })
   @IsOptional()
   @IsDateString()
-  searchToDate?: string;
+  create_at_to?: string;
 
   @ApiPropertyOptional({
     description: 'Page number for pagination',
@@ -44,9 +46,12 @@ export class GetCategoryListDto {
   @IsOptional()
   @Transform(({ value }) => parseInt(value, 10))
   @IsInt()
-  pageSize?: number;
+  size?: number;
 
-  @ApiPropertyOptional({ description: 'Sort order (e.g., createdAt DESC)' })
+  @ApiPropertyOptional({
+    description:
+      'sort: [id | name | create_at],desc  [id | name | create_at],asc',
+  })
   @IsOptional()
   @IsString()
   sort?: string;

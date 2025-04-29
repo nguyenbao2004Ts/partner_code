@@ -3,9 +3,8 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { UserCreateRepository } from './repositories/repository-create-user/user-create.repository';
-import { UserFindRepository } from './repositories/repository-find-user/user-find.repository';
 import * as bcrypt from 'bcrypt';
+import { UserCreateRepository, UserFindRepository } from './repositories/index';
 
 @Injectable()
 export class UsersService {
@@ -28,13 +27,13 @@ export class UsersService {
       );
 
       return {
-        message: 'Đăng ký thành công',
+        message: 'Registration successful',
       };
     } catch (error) {
       if (error.code === 'ER_DUP_ENTRY') {
-        throw new HttpException('Email đã tồn tại', HttpStatus.BAD_REQUEST);
+        throw new HttpException('Email already exists', HttpStatus.BAD_REQUEST);
       }
-      throw new HttpException('Lỗi hệ thống', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException('System error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 

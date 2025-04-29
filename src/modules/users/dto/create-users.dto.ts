@@ -47,39 +47,40 @@ export class NoSqlInjectionConstraint implements ValidatorConstraintInterface {
 }
 
 export class CreateUserDto {
-  @ApiProperty({ example: 'johndoe', description: 'Tên người dùng' })
-  @IsString({ message: 'Tên phải là chuỗi' })
-  @IsNotEmpty({ message: 'Tên không được để trống' })
-  @MinLength(3, { message: 'Tên phải có ít nhất 3 ký tự' })
+  @ApiProperty({ example: 'johndoe', description: 'User name' })
+  @IsString({ message: 'Name must be a string' })
+  @IsNotEmpty({ message: 'Name cannot be blank' })
+  @MinLength(3, { message: 'Name must be at least 3 characters' })
   @Matches(/^[a-zA-ZÀ-ỹ\s0-9]+$/, {
-    message: 'Tên không được chứa ký tự đặc biệt',
+    message: 'Name cannot contain special characters',
   })
   @Validate(NoSqlInjectionConstraint, {
-    message: 'Tên không được chứa từ khoá SQL',
+    message: 'The name cannot contain SQL keywords.',
   })
   username: string;
 
   @ApiProperty({
-    example: 'johndoe@example.com',
-    description: 'Địa chỉ email người dùng',
+    example: 'johndoe@gmail.com',
+    description: 'User email address',
   })
-  @IsEmail({}, { message: 'Email không hợp lệ' })
-  @IsNotEmpty({ message: 'Email không được để trống' })
+  @IsEmail({}, { message: 'Invalid email' })
+  @IsNotEmpty({ message: 'Email cannot be blank' })
   @Validate(NoSqlInjectionConstraint, {
-    message: 'Email không được chứa từ khoá SQL',
+    message: 'Emails cannot contain SQL keywords',
   })
   email: string;
 
-  @ApiProperty({ example: 'StrongPass123', description: 'Mật khẩu người dùng' })
-  @IsDefined({ message: 'Mật khẩu không được thiếu' })
-  @IsNotEmpty({ message: 'Mật khẩu không được để trống' })
-  @IsString({ message: 'Mật khẩu phải là chuỗi' })
-  @MinLength(6, { message: 'Mật khẩu phải có ít nhất 6 ký tự' })
+  @ApiProperty({ example: '123456Ts', description: 'Password' })
+  @IsDefined({ message: 'Password must not be missing' })
+  @IsNotEmpty({ message: 'Password cannot be blank' })
+  @IsString({ message: 'Password must be a string' })
+  @MinLength(6, { message: 'Password must be at least 6 characters' })
   @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{6,}$/, {
-    message: 'Mật khẩu phải chứa ít nhất 1 chữ hoa, 1 chữ thường và 1 số',
+    message:
+      'Password must contain at least 1 uppercase letter, 1 lowercase letter and 1 number',
   })
   @Validate(NoSqlInjectionConstraint, {
-    message: 'Mật khẩu không được chứa từ khoá SQL',
+    message: 'Password cannot contain SQL keywords',
   })
   password: string;
 }

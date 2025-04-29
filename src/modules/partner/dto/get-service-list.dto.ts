@@ -7,31 +7,31 @@ export class GetServiceListDto {
   @ApiPropertyOptional({ description: 'ID of the service to search for' })
   @IsOptional()
   @IsString()
-  searchId?: string;
+  id?: string;
 
   @ApiPropertyOptional({ description: 'Name of the service to search for' })
   @IsOptional()
   @IsString()
-  searchName?: string;
+  name?: string;
 
   @ApiPropertyOptional({ description: 'Category name related to service' })
   @IsOptional()
   @IsString()
-  searchNameCategory?: string;
+  name_category?: string;
 
   @ApiPropertyOptional({
     description: 'From date for filtering services (ISO format)',
   })
   @IsOptional()
   @IsDateString()
-  searchFromDate?: string;
+  create_at_form?: string;
 
   @ApiPropertyOptional({
     description: 'To date for filtering services (ISO format)',
   })
   @IsOptional()
   @IsDateString()
-  searchToDate?: string;
+  create_at_to?: string;
 
   @ApiPropertyOptional({
     description: 'Page number for pagination',
@@ -49,7 +49,7 @@ export class GetServiceListDto {
   @IsOptional()
   @Transform(({ value }) => parseInt(value, 10))
   @IsInt()
-  pageSize?: number;
+  size?: number;
 
   @ApiPropertyOptional({ description: 'Sort order (e.g., createdAt DESC)' })
   @IsOptional()

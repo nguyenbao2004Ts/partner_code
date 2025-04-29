@@ -1,4 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import {
   Body,
   Controller,
@@ -9,6 +10,8 @@ import {
   Post,
   Query,
   UseGuards,
+  HttpStatus,
+  NotFoundException,
 } from '@nestjs/common';
 import { PartnerService } from './partner.service';
 import {
@@ -47,7 +50,15 @@ export class PartnerController {
   })
   @ApiResponse({ status: 400, description: 'Bad request' })
   async getCategoryList(@Query() query: GetCategoryListDto) {
-    return this.partnerService.getCategoryList(query);
+    const data = await this.partnerService.getCategoryList(query);
+    if (!data || data.length === 0) {
+      throw new NotFoundException('No categories found');
+    }
+    return {
+      data: data,
+      statusCode: HttpStatus.OK,
+      message: 'Categories retrieved successfully',
+    };
   }
 
   @ApiBearerAuth()
@@ -60,7 +71,15 @@ export class PartnerController {
   })
   @ApiResponse({ status: 400, description: 'Bad request' })
   async getServiceList(@Query() query: GetServiceListDto) {
-    return this.partnerService.getServiceList(query);
+    const data = await this.partnerService.getServiceList(query);
+    if (!data || data.length === 0) {
+      throw new NotFoundException('No service found');
+    }
+    return {
+      data: data,
+      statusCode: HttpStatus.OK,
+      message: 'Services retrieved successfully',
+    };
   }
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
@@ -72,7 +91,15 @@ export class PartnerController {
   })
   @ApiResponse({ status: 400, description: 'Bad request' })
   async getPartnerList(@Query() query: GetPartnerListDto) {
-    return this.partnerService.getPartnerList(query);
+    const data = await this.partnerService.getPartnerList(query);
+    if (!data || data.length === 0) {
+      throw new NotFoundException('No partner found');
+    }
+    return {
+      data: data,
+      statusCode: HttpStatus.OK,
+      message: 'Partners retrieved successfully',
+    };
   }
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
@@ -82,7 +109,12 @@ export class PartnerController {
   @ApiResponse({ status: 400, description: 'Invalid request data' })
   @ApiBody({ type: InsertCategoryDto })
   async insertCategory(@Body() body: InsertCategoryDto) {
-    return this.partnerService.insertCategory(body);
+    const data = await this.partnerService.insertCategory(body);
+    return {
+      data: data,
+      statusCode: HttpStatus.CREATED,
+      message: 'Category created successfully',
+    };
   }
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
@@ -92,7 +124,12 @@ export class PartnerController {
   @ApiResponse({ status: 400, description: 'Invalid request data' })
   @ApiBody({ type: InsertServiceDto })
   async insertService(@Body() body: InsertServiceDto) {
-    return this.partnerService.insertService(body);
+    const data = await this.partnerService.insertService(body);
+    return {
+      data: data,
+      statusCode: HttpStatus.CREATED,
+      message: 'Service created successfully',
+    };
   }
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
@@ -102,7 +139,12 @@ export class PartnerController {
   @ApiResponse({ status: 400, description: 'Invalid request data' })
   @ApiBody({ type: InsertPartnerDto })
   async insertPartner(@Body() body: InsertPartnerDto) {
-    return this.partnerService.insertPartner(body);
+    const data = await this.partnerService.insertPartner(body);
+    return {
+      data: data,
+      statusCode: HttpStatus.CREATED,
+      message: 'Partner created successfully',
+    };
   }
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
@@ -119,7 +161,12 @@ export class PartnerController {
     @Param('id') id: number,
     @Body() body: UpdateCategoryDto,
   ) {
-    return this.partnerService.updateCategory({ ...body, id });
+    const data = await this.partnerService.updateCategory({ ...body, id });
+    return {
+      data: data,
+      statusCode: HttpStatus.OK,
+      message: 'Category updated successfully',
+    };
   }
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
@@ -133,7 +180,12 @@ export class PartnerController {
   @ApiBody({ type: UpdateServiceDto })
   @ApiOkResponse({ description: 'Service updated successfully' })
   async updateService(@Param('id') id: number, @Body() body: UpdateServiceDto) {
-    return this.partnerService.updateService({ ...body, id });
+    const data = await this.partnerService.updateService({ ...body, id });
+    return {
+      data: data,
+      statusCode: HttpStatus.OK,
+      message: 'Service updated successfully',
+    };
   }
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
@@ -147,7 +199,12 @@ export class PartnerController {
   @ApiBody({ type: UpdatePartnerDto })
   @ApiOkResponse({ description: 'Partner updated successfully' })
   async updatePartner(@Param('id') id: number, @Body() body: UpdatePartnerDto) {
-    return this.partnerService.updatePartner({ ...body, id });
+    const data = await this.partnerService.updatePartner({ ...body, id });
+    return {
+      data: data,
+      statusCode: HttpStatus.OK,
+      message: 'Partner updated successfully',
+    };
   }
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
@@ -160,7 +217,11 @@ export class PartnerController {
   })
   @ApiOkResponse({ description: 'Category deleted successfully' })
   async deleteCategory(@Param('id') id: number) {
-    return this.partnerService.deleteCategory(id);
+    await this.partnerService.deleteCategory(id);
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'Category deleted successfully',
+    };
   }
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
@@ -173,7 +234,11 @@ export class PartnerController {
   })
   @ApiOkResponse({ description: 'Service deleted successfully' })
   async deleteService(@Param('id') id: number) {
-    return this.partnerService.deleteService(id);
+    await this.partnerService.deleteService(id);
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'Service deleted successfully',
+    };
   }
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
@@ -186,6 +251,10 @@ export class PartnerController {
   })
   @ApiOkResponse({ description: 'Partner deleted successfully' })
   async deletePartner(@Param('id') id: number) {
-    return this.partnerService.deletePartner(id);
+    await this.partnerService.deletePartner(id);
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'Partner deleted successfully',
+    };
   }
 }

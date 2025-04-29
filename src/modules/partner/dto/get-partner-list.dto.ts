@@ -7,36 +7,36 @@ export class GetPartnerListDto {
   @ApiPropertyOptional({ description: 'ID of the partner to search for' })
   @IsOptional()
   @IsString()
-  searchId?: string;
+  id?: string;
 
   @ApiPropertyOptional({ description: 'Name of the partner to search for' })
   @IsOptional()
   @IsString()
-  searchName?: string;
+  name?: string;
 
   @ApiPropertyOptional({ description: 'Service name related to partner' })
   @IsOptional()
   @IsString()
-  searchNameService?: string;
+  name_service?: string;
 
   @ApiPropertyOptional({ description: 'Category name related to partner' })
   @IsOptional()
   @IsString()
-  searchNameCategory?: string;
+  name_category?: string;
 
   @ApiPropertyOptional({
     description: 'From date for filtering partners (ISO format)',
   })
   @IsOptional()
   @IsDateString()
-  searchFromDate?: string;
+  create_at_form?: string;
 
   @ApiPropertyOptional({
     description: 'To date for filtering partners (ISO format)',
   })
   @IsOptional()
   @IsDateString()
-  searchToDate?: string;
+  create_at_to?: string;
 
   @ApiPropertyOptional({
     description: 'Page number for pagination',
@@ -54,7 +54,7 @@ export class GetPartnerListDto {
   @IsOptional()
   @Transform(({ value }) => parseInt(value, 10))
   @IsInt()
-  pageSize?: number;
+  size?: number;
 
   @ApiPropertyOptional({ description: 'Sort order (e.g., createdAt DESC)' })
   @IsOptional()
