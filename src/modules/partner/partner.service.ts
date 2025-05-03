@@ -1,14 +1,19 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 import { Injectable } from '@nestjs/common';
-import { GetCategoryListDto } from './dto/get-category-list.dto';
-import { GetServiceListDto } from './dto/get-service-list.dto';
-import { GetPartnerListDto } from './dto/get-partner-list.dto';
-import { InsertCategoryDto } from './dto/insert-category.dto';
-import { InsertServiceDto } from './dto/insert-service.dto';
-import { InsertPartnerDto } from './dto/insert-partner.dto';
-import { UpdateCategoryDto } from './dto/update-category.dto';
-import { UpdateServiceDto } from './dto/update-service.dto';
-import { UpdatePartnerDto } from './dto/update-partner.dto';
+import {
+  GetCategoryListDto,
+  GetServiceListDto,
+  GetPartnerListDto,
+  InsertCategoryDto,
+  InsertServiceDto,
+  InsertPartnerDto,
+  UpdateCategoryDto,
+  UpdateServiceDto,
+  UpdatePartnerDto,
+  GetListDto,
+  InsertListDto,
+  UpdateListDto,
+} from './dto';
 import {
   GetCategoryRepository,
   GetServiceRepository,
@@ -22,8 +27,11 @@ import {
   DeleteCategoryRepository,
   DeleteServiceRepository,
   DeletePartnerRepository,
+  GetListRepository,
+  InsertListRepository,
+  UpdateListRepository,
+  DeleteListRepository,
 } from './repositories';
-@Injectable()
 @Injectable()
 export class PartnerService {
   constructor(
@@ -39,6 +47,10 @@ export class PartnerService {
     private readonly deleteCategoryRepo: DeleteCategoryRepository,
     private readonly deleteServiceRepo: DeleteServiceRepository,
     private readonly deletePartnerRepo: DeletePartnerRepository,
+    private readonly getListRepo: GetListRepository,
+    private readonly insertListRepo: InsertListRepository,
+    private readonly updateListRepo: UpdateListRepository,
+    private readonly deleteListRepo: DeleteListRepository,
   ) {}
 
   async getCategoryList(dto: GetCategoryListDto) {
@@ -52,6 +64,7 @@ export class PartnerService {
       dto.sort || 'ID,ASC',
     );
   }
+
   async getServiceList(dto: GetServiceListDto) {
     return this.serviceRepo.getServiceList(
       dto.id || 'all',
@@ -64,6 +77,7 @@ export class PartnerService {
       dto.sort || 'ID,ASC',
     );
   }
+
   async getPartnerList(dto: GetPartnerListDto) {
     return this.partnerRepo.getPartnerList(
       dto.id || 'all',
@@ -77,6 +91,7 @@ export class PartnerService {
       dto.sort || 'ID,ASC',
     );
   }
+
   async insertCategory(dto: InsertCategoryDto) {
     return this.insertCategoryRepo.insertCategory(
       dto.data_code,
@@ -88,6 +103,7 @@ export class PartnerService {
       dto.referral_phone || null,
     );
   }
+
   async insertService(dto: InsertServiceDto) {
     return this.insertServiceRepo.insertService(
       dto.data_code,
@@ -100,6 +116,7 @@ export class PartnerService {
       dto.referral_phone || null,
     );
   }
+
   async insertPartner(dto: InsertPartnerDto) {
     return this.insertPartnerRepo.insertPartner(
       dto.data_code,
@@ -112,6 +129,7 @@ export class PartnerService {
       dto.referral_phone || null,
     );
   }
+
   async updateCategory(dto: UpdateCategoryDto) {
     return this.updateCategoryRepo.updateCategory(
       dto.id,
@@ -124,6 +142,7 @@ export class PartnerService {
       dto.referral_phone || null,
     );
   }
+
   async updateService(dto: UpdateServiceDto) {
     return this.updateServiceRepo.updateService(
       dto.id,
@@ -137,6 +156,7 @@ export class PartnerService {
       dto.referral_phone || null,
     );
   }
+
   async updatePartner(dto: UpdatePartnerDto) {
     return this.updatePartnerRepo.updatePartner(
       dto.id,
@@ -150,13 +170,64 @@ export class PartnerService {
       dto.referral_phone || null,
     );
   }
+
   async deleteCategory(id: number) {
     return this.deleteCategoryRepo.deleteCategory(id);
   }
+
   async deleteService(id: number) {
     return this.deleteServiceRepo.deleteService(id);
   }
+
   async deletePartner(id: number) {
     return this.deletePartnerRepo.deletePartner(id);
+  }
+
+  async getList(dto: GetListDto) {
+    return this.getListRepo.getList(
+      dto.data_type,
+      dto.id || 'all',
+      dto.name || 'all',
+      dto.service_name || 'all',
+      dto.category_name || 'all',
+      dto.create_at_from,
+      dto.create_at_to,
+      dto.page || 1,
+      dto.size || 10,
+      dto.sort || 'ID,ASC',
+    );
+  }
+
+  async insertList(dto: InsertListDto) {
+    return this.insertListRepo.insertList(
+      dto.data_type,
+      dto.data_code,
+      dto.data_title,
+      dto.parent_id || null,
+      dto.data_image || null,
+      dto.data_desc || null,
+      dto.referral_name || null,
+      dto.referral_email || null,
+      dto.referral_phone || null,
+    );
+  }
+
+  async updateList(dto: UpdateListDto) {
+    return this.updateListRepo.updateList(
+      dto.id,
+      dto.data_type,
+      dto.data_code || null,
+      dto.data_title,
+      dto.parent_id || null,
+      dto.data_image || null,
+      dto.data_desc || null,
+      dto.referral_name || null,
+      dto.referral_email || null,
+      dto.referral_phone || null,
+    );
+  }
+
+  async deleteItem(id: number) {
+    return this.deleteListRepo.deleteItem(id);
   }
 }

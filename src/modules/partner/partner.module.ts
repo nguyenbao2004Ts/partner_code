@@ -14,6 +14,10 @@ import {
   DeleteCategoryRepository,
   DeleteServiceRepository,
   DeletePartnerRepository,
+  GetListRepository,
+  InsertListRepository,
+  UpdateListRepository,
+  DeleteListRepository,
 } from './repositories';
 
 @Module({
@@ -32,6 +36,10 @@ import {
     DeleteCategoryRepository,
     DeleteServiceRepository,
     DeletePartnerRepository,
+    GetListRepository,
+    InsertListRepository,
+    UpdateListRepository,
+    DeleteListRepository,
   ],
 })
 export class PartnerModule {}

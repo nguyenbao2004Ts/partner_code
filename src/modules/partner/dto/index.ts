@@ -10,3 +10,7 @@ export { UpdatePartnerDto } from './update-partner.dto';
 export { DeleteCategoryDto } from './delete-category.dto';
 export { DeleteServiceDto } from './delete-service.dto';
 export { DeletePartnerDto } from './delete-partner.dto';
+export { GetListDto } from './get-list.dto';
+export { InsertListDto } from './insert-list.dto';
+export { UpdateListDto } from './update-list.dto';
+export { DeleteListDto } from './delete-list.dto';

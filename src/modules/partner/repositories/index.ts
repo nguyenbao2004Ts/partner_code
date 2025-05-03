@@ -10,3 +10,7 @@ export { UpdateServiceRepository } from './repository-update-service/update-serv
 export { DeleteCategoryRepository } from './repository-delete-category/delete-category.repository';
 export { DeletePartnerRepository } from './repository-delete-partner/delete-partner.repository';
 export { DeleteServiceRepository } from './repository-delete-service/delete-service.repository';
+export { GetListRepository } from './repository-get-list/get-list.repository';
+export { InsertListRepository } from './repository-insert-list/insert-list.repository';
+export { UpdateListRepository } from './repository-update-list/update-list.repository';
+export { DeleteListRepository } from './repository-delete-list/delete-list.repository';
