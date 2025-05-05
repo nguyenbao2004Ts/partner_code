@@ -14,4 +14,10 @@ export class UserFindRepository {
     ]);
     return result[0];
   }
+  async findById(id: number) {
+    const result = await this.spService.callProcedure('sp_find_user_by_id', [
+      id,
+    ]);
+    return result[0];
+  }
 }

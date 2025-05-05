@@ -1,10 +1,11 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 import {
   Body,
   Controller,
   Get,
-  HttpStatus,
   Post,
   UseGuards,
   UsePipes,
@@ -42,10 +43,10 @@ export class AuthController {
   async register(@Body() userData: CreateUserDto) {
     const result = await this.userService.create(userData);
     return {
-      statusCode: HttpStatus.CREATED,
       message: result.message,
     };
   }
+
   @UseGuards(LocalAuthGuard)
   @Post('login')
   @ApiOperation({ summary: 'Login to the system' })
@@ -66,6 +67,40 @@ export class AuthController {
   async login(@Request() req: any) {
     return this.authService.login(req.user);
   }
+
+  @Post('refresh')
+  @ApiOperation({ summary: 'Refresh access token using refresh token' })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        refresh_token: { type: 'string', example: 'your_refresh_token_here' },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Token refreshed successfully, return new_access_token',
+  })
+  @ApiResponse({ status: 401, description: 'Invalid or expired refresh token' })
+  async refresh(
+    @Request() req: any,
+    @Body('refresh_token') refreshToken: string,
+  ) {
+    const payload = await this.authService.verifyRefreshToken(refreshToken);
+    return this.authService.refreshToken(payload.sub, refreshToken);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('logout')
+  @ApiOperation({ summary: 'Logout and invalidate refresh token' })
+  @ApiBearerAuth()
+  @ApiResponse({ status: 200, description: 'Logout successful' })
+  @ApiResponse({ status: 401, description: 'Token is invalid or expired' })
+  async logout(@Request() req: any) {
+    return this.authService.logout(req.user.id);
+  }
+
   @UseGuards(JwtAuthGuard)
   @Get('profile')
   @ApiOperation({ summary: 'Get user information from access_token' })

@@ -13,4 +13,10 @@ export class UserCreateRepository {
       password,
     ]);
   }
+  async updateRefreshToken(userId: number, refreshToken: string | null) {
+    return await this.spService.callProcedure('sp_update_refresh_token', [
+      userId,
+      refreshToken,
+    ]);
+  }
 }

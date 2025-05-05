@@ -41,6 +41,10 @@ export class UsersService {
     return await this.userFindRepo.findByEmail(email);
   }
 
+  async findById(id: number) {
+    return await this.userFindRepo.findById(id);
+  }
+
   async validateUser(email: string, password: string) {
     const user = await this.findByEmail(email);
     if (!user) return null;
@@ -49,5 +53,9 @@ export class UsersService {
     if (!isValid) return null;
 
     return user;
+  }
+
+  async updateRefreshToken(userId: number, refreshToken: string | null) {
+    await this.userCreateRepo.updateRefreshToken(userId, refreshToken);
   }
 }
