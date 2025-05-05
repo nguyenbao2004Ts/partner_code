@@ -100,8 +100,8 @@ Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
 
 
 ///////////////////////////////
-npm install - install module
-create .env 
+install node_module: npm install (npm i)
+create: .env 
 DB_HOST=
 DB_PORT=
 DB_USERNAME=
@@ -111,5 +111,8 @@ DB_NAME=
 
 JWT_SECRET=
 
-JWT_ACCESS_TOKEN_EXPRIRE=1h
-JWT_EXPIRES_IN=1h
+JWT_ACCESS_TOKEN_EXPIRE=5h
+# JWT_EXPIRES_IN=1h
+
+JWT_REFRESH_TOKEN_SECRET=
+JWT_REFRESH_TOKEN_EXPIRE=10h
