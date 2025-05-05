@@ -253,6 +253,7 @@ export class PartnerController {
     };
   }
 
+  @ApiTags('List')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Get('/get-list')
@@ -270,6 +271,7 @@ export class PartnerController {
     };
   }
 
+  @ApiTags('List')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Post('/insert-list')
@@ -289,6 +291,7 @@ export class PartnerController {
     };
   }
 
+  @ApiTags('List')
   @Patch('/list/:id')
   @ApiOperation({ summary: 'Update a category, service, or partner' })
   @ApiParam({
@@ -305,6 +308,7 @@ export class PartnerController {
     };
   }
 
+  @ApiTags('List')
   @Delete('/list/:id')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)

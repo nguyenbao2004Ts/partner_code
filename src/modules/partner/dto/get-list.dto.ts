@@ -1,12 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { Transform } from 'class-transformer';
-import {
-  IsOptional,
-  IsString,
-  IsInt,
-  IsIn,
-  IsDateString,
-} from 'class-validator';
+import { IsOptional, IsString, IsInt, IsIn, Matches } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class GetListDto {
@@ -38,14 +32,26 @@ export class GetListDto {
   @IsString()
   category_name?: string;
 
-  @ApiPropertyOptional({ description: 'From date filter' })
+  @ApiPropertyOptional({
+    description: 'From date filter (format: YYYY-MM-DD HH:mm:ss)',
+    example: '2000-01-01 00:00:00',
+  })
   @IsOptional()
-  @IsDateString()
+  @IsString()
+  @Matches(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/, {
+    message: 'create_at_from must be in format YYYY-MM-DD HH:mm:ss',
+  })
   create_at_from?: string;
 
-  @ApiPropertyOptional({ description: 'To date filter' })
+  @ApiPropertyOptional({
+    description: 'To date filter (format: YYYY-MM-DD HH:mm:ss)',
+    example: '2000-01-01 23:59:59',
+  })
   @IsOptional()
-  @IsDateString()
+  @IsString()
+  @Matches(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/, {
+    message: 'create_at_to must be in format YYYY-MM-DD HH:mm:ss',
+  })
   create_at_to?: string;
 
   @ApiPropertyOptional({ description: 'Page number', default: 1 })
