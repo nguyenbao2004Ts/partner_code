@@ -11,6 +11,7 @@ import {
   Query,
   UseGuards,
   NotFoundException,
+  BadRequestException,
 } from '@nestjs/common';
 import { PartnerService } from './partner.service';
 import {
@@ -113,7 +114,6 @@ export class PartnerController {
   async insertCategory(@Body() body: InsertCategoryDto) {
     const data = await this.partnerService.insertCategory(body);
     return {
-      message: 'Category created successfully',
       data: data,
     };
   }
@@ -128,7 +128,6 @@ export class PartnerController {
   async insertService(@Body() body: InsertServiceDto) {
     const data = await this.partnerService.insertService(body);
     return {
-      message: 'Service created successfully',
       data: data,
     };
   }
@@ -142,7 +141,6 @@ export class PartnerController {
   async insertPartner(@Body() body: InsertPartnerDto) {
     const data = await this.partnerService.insertPartner(body);
     return {
-      message: 'Partner created successfully',
       data: data,
     };
   }
@@ -215,9 +213,9 @@ export class PartnerController {
   })
   @ApiOkResponse({ description: 'Category deleted successfully' })
   async deleteCategory(@Param('id') id: number) {
-    await this.partnerService.deleteCategory(id);
+    const data = await this.partnerService.deleteCategory(id);
     return {
-      message: 'Category deleted successfully',
+      data: data,
     };
   }
 
@@ -232,9 +230,9 @@ export class PartnerController {
   })
   @ApiOkResponse({ description: 'Service deleted successfully' })
   async deleteService(@Param('id') id: number) {
-    await this.partnerService.deleteService(id);
+    const data = await this.partnerService.deleteService(id);
     return {
-      message: 'Service deleted successfully',
+      data: data,
     };
   }
 
@@ -249,9 +247,9 @@ export class PartnerController {
   })
   @ApiOkResponse({ description: 'Partner deleted successfully' })
   async deletePartner(@Param('id') id: number) {
-    await this.partnerService.deletePartner(id);
+    const data = await this.partnerService.deletePartner(id);
     return {
-      message: 'Partner deleted successfully',
+      data: data,
     };
   }
 
@@ -283,8 +281,10 @@ export class PartnerController {
   @ApiBody({ type: InsertListDto })
   async insertList(@Body() body: InsertListDto) {
     const data = await this.partnerService.insertList(body);
+    if (!data) {
+      throw new BadRequestException('Failed to insert data');
+    }
     return {
-      message: 'Data inserted successfully',
       data,
     };
   }
@@ -316,9 +316,9 @@ export class PartnerController {
   })
   @ApiOkResponse({ description: 'Item deleted successfully' })
   async deleteItem(@Param('id') id: number) {
-    const result = await this.partnerService.deleteItem(id);
+    const data = await this.partnerService.deleteItem(id);
     return {
-      message: result?.[0]?.Message || 'Item deleted successfully',
+      data: data,
     };
   }
 }

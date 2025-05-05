@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { StoredProcedureService } from 'src/database/database-Sp.service';
 
 @Injectable()
@@ -16,7 +18,7 @@ export class UpdateCategoryRepository {
     referralEmail: string | null,
     referralPhone: string | null,
   ) {
-    return this.spService.callProcedure('SP_UPDATE_CATEGORY', [
+    const result = await this.spService.callProcedure('SP_UPDATE_CATEGORY', [
       id,
       dataCode,
       dataTitle,
@@ -26,5 +28,9 @@ export class UpdateCategoryRepository {
       referralEmail,
       referralPhone,
     ]);
+    if (result?.[0]?.ErrorMessage) {
+      throw new BadRequestException(result[0].ErrorMessage);
+    }
+    return result;
   }
 }
