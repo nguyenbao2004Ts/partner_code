@@ -325,4 +325,23 @@ export class PartnerController {
       data: data,
     };
   }
+
+  @ApiTags('List')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Get('/total/:data_type')
+  @ApiOperation({ summary: 'Get total count of items by type' })
+  @ApiResponse({ status: 200, description: 'Total retrieved successfully' })
+  @ApiParam({
+    name: 'data_type',
+    type: String,
+    description: 'Type of data (category, service, partner)',
+  })
+  async getTotalByType(@Param('data_type') data_type: string) {
+    const data = await this.partnerService.getTotalByType(data_type);
+    return {
+      message: 'Total retrieved successfully',
+      data,
+    };
+  }
 }

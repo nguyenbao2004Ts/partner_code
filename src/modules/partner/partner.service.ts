@@ -31,6 +31,7 @@ import {
   InsertListRepository,
   UpdateListRepository,
   DeleteListRepository,
+  TotalRepository,
 } from './repositories';
 @Injectable()
 export class PartnerService {
@@ -51,6 +52,7 @@ export class PartnerService {
     private readonly insertListRepo: InsertListRepository,
     private readonly updateListRepo: UpdateListRepository,
     private readonly deleteListRepo: DeleteListRepository,
+    private readonly totalRepo: TotalRepository,
   ) {}
 
   async getCategoryList(dto: GetCategoryListDto) {
@@ -229,5 +231,9 @@ export class PartnerService {
 
   async deleteItem(id: number) {
     return this.deleteListRepo.deleteItem(id);
+  }
+
+  async getTotalByType(data_type: string) {
+    return this.totalRepo.getTotalByType(data_type);
   }
 }

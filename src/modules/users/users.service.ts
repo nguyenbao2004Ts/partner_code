@@ -4,13 +4,20 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
-import { UserCreateRepository, UserFindRepository } from './repositories/index';
+import {
+  UserCreateRepository,
+  UserFindRepository,
+  UserFindIdRepository,
+  UpdateRefreshTokenRepository,
+} from './repositories/index';
 
 @Injectable()
 export class UsersService {
   constructor(
     private readonly userCreateRepo: UserCreateRepository,
     private readonly userFindRepo: UserFindRepository,
+    private readonly userFindIdRepo: UserFindIdRepository,
+    private readonly updateRefreshTokenRepo: UpdateRefreshTokenRepository,
   ) {}
 
   async create(userData: {
@@ -42,7 +49,7 @@ export class UsersService {
   }
 
   async findById(id: number) {
-    return await this.userFindRepo.findById(id);
+    return await this.userFindIdRepo.findById(id);
   }
 
   async validateUser(email: string, password: string) {
@@ -56,6 +63,6 @@ export class UsersService {
   }
 
   async updateRefreshToken(userId: number, refreshToken: string | null) {
-    await this.userCreateRepo.updateRefreshToken(userId, refreshToken);
+    await this.updateRefreshTokenRepo.updateRefreshToken(userId, refreshToken);
   }
 }

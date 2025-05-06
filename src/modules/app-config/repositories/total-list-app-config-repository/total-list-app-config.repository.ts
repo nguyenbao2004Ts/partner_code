@@ -5,13 +5,11 @@ import { Injectable } from '@nestjs/common';
 import { StoredProcedureService } from 'src/database/database-Sp.service';
 
 @Injectable()
-export class UserFindRepository {
+export class TotalListAppConfigRepository {
   constructor(private readonly spService: StoredProcedureService) {}
 
-  async findByEmail(email: string) {
-    const result = await this.spService.callProcedure('sp_find_user_by_email', [
-      email,
-    ]);
+  async getTotalAppConfig(): Promise<{ total: number }> {
+    const result = await this.spService.callProcedure('sp_total_app_config');
     return result[0];
   }
 }

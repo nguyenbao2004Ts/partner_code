@@ -14,3 +14,4 @@ export { GetListRepository } from './repository-get-list/get-list.repository';
 export { InsertListRepository } from './repository-insert-list/insert-list.repository';
 export { UpdateListRepository } from './repository-update-list/update-list.repository';
 export { DeleteListRepository } from './repository-delete-list/delete-list.repository';
+export { TotalRepository } from './repository-total/total.repository';

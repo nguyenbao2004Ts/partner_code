@@ -14,3 +14,4 @@ export { GetListDto } from './get-list.dto';
 export { InsertListDto } from './insert-list.dto';
 export { UpdateListDto } from './update-list.dto';
 export { DeleteListDto } from './delete-list.dto';
+export { TotalDto } from './total.dto';

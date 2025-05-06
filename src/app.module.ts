@@ -8,6 +8,7 @@ import { DatabaseModule } from './database/database.module';
 import { PartnerModule } from './modules/partner/partner.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
+import { AppConfigModule } from './modules/app-config/app-config.module';
 import User from './modules/users/entity/User';
 
 @Module({
@@ -31,6 +32,7 @@ import User from './modules/users/entity/User';
     PartnerModule,
     UsersModule,
     AuthModule,
+    AppConfigModule,
   ],
   controllers: [AppController],
   providers: [AppService],

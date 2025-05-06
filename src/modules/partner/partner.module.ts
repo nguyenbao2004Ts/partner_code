@@ -18,6 +18,7 @@ import {
   InsertListRepository,
   UpdateListRepository,
   DeleteListRepository,
+  TotalRepository,
 } from './repositories';
 
 @Module({
@@ -40,6 +41,7 @@ import {
     InsertListRepository,
     UpdateListRepository,
     DeleteListRepository,
+    TotalRepository,
   ],
 })
 export class PartnerModule {}
