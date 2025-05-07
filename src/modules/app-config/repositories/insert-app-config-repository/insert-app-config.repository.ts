@@ -1,5 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { StoredProcedureService } from 'src/database/database-Sp.service';
 
 @Injectable()
@@ -10,22 +15,24 @@ export class InsertAppConfigRepository {
     key: string,
     value: string,
     description?: string,
-  ): Promise<{ error_code: number; error_message: string }> {
-    // Gọi stored procedure với các tham số input và out
+  ): Promise<{ message: string }> {
     const result = await this.spService.callProcedureWithOutParams(
       'sp_insert_app_config',
       [key, value, description || null],
       ['p_error_code', 'p_error_message'],
     );
 
-    // Kiểm tra lỗi từ OUT parameters
-    if (result.p_error_code !== 0) {
-      throw new BadRequestException(result.p_error_message);
+    switch (result.p_error_code) {
+      case 200:
+        return { message: result.p_error_message };
+      case 400:
+        throw new BadRequestException(result.p_error_message);
+      case 404:
+        throw new NotFoundException(result.p_error_message);
+      case 409:
+        throw new ConflictException(result.p_error_message);
+      default:
+        throw new BadRequestException('Unknown error');
     }
-
-    return {
-      error_code: result.p_error_code,
-      error_message: result.p_error_message,
-    };
   }
 }

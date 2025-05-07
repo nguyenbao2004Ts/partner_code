@@ -1,7 +1,10 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { StoredProcedureService } from 'src/database/database-Sp.service';
 
 @Injectable()
@@ -20,21 +23,34 @@ export class UpdateListRepository {
     referral_email: string | null,
     referral_phone: string | null,
   ) {
-    const result = await this.spService.callProcedure('SP_UPDATE', [
-      id,
-      data_type,
-      data_code,
-      data_title,
-      parent_id,
-      data_image,
-      data_desc,
-      referral_name,
-      referral_email,
-      referral_phone,
-    ]);
-    if (result?.[0]?.ErrorMessage) {
-      throw new BadRequestException(result[0].ErrorMessage);
+    const result = await this.spService.callProcedureWithOutParams(
+      'SP_UPDATE',
+      [
+        id,
+        data_type,
+        data_code,
+        data_title,
+        parent_id,
+        data_image,
+        data_desc,
+        referral_name,
+        referral_email,
+        referral_phone,
+      ],
+      ['p_error_code', 'p_error_message'],
+    );
+
+    switch (result.p_error_code) {
+      case 200:
+        return { message: result.p_error_message };
+      case 400:
+        throw new BadRequestException(result.p_error_message);
+      case 404:
+        throw new NotFoundException(result.p_error_message);
+      case 409:
+        throw new ConflictException(result.p_error_message);
+      default:
+        throw new BadRequestException('Unknown error');
     }
-    return result;
   }
 }

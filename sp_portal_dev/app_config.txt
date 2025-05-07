@@ -1,0 +1,203 @@
+app_config
+
+DELIMITER //
+CREATE PROCEDURE portal_dev.sp_total_app_config ()
+BEGIN
+    SELECT COUNT(a.key) AS total
+  FROM app_config a;
+
+END //
+
+DELIMITER ;
+
+///////////////////////////////////////////
+
+DELIMITER //
+CREATE PROCEDURE portal_dev.sp_get_list_app_user (
+    IN p_user_email VARCHAR(255),
+    IN p_created_at_from DATETIME,
+    IN p_created_at_to DATETIME,
+    IN p_updated_at_from DATETIME,
+    IN p_updated_at_to DATETIME,
+    IN p_page INT,
+    IN p_size INT,
+    IN p_sort VARCHAR(50)
+)
+BEGIN
+    DECLARE offset_value INT DEFAULT 0;
+    SET offset_value = (p_page - 1) * p_size;
+    SELECT 
+        a.USER_EMAIL AS user_email,
+        a.USER_FULLNAME AS user_fullname,
+        a.USER_STATUS AS user_status,
+        a.CREATED_AT AS created_at,
+        a.UPDATED_AT AS updated_at
+    FROM
+        portal_dev.APP_USER a
+    WHERE
+        (p_user_email IS NULL OR TRIM(p_user_email) = '' OR a.USER_EMAIL LIKE CONCAT('%',p_user_email, '%'))
+        AND (p_created_at_from IS NULL OR p_created_at_from=''  OR a.CREATED_AT >= p_created_at_from)
+        AND (p_created_at_to IS NULL OR p_created_at_to='' OR a.CREATED_AT <= p_created_at_to)
+        AND (p_updated_at_from IS NULL OR p_updated_at_from='' OR a.UPDATED_AT >= p_updated_at_from)
+        AND (p_updated_at_to IS NULL OR p_updated_at_to='' OR a.UPDATED_AT <= p_updated_at_to)
+    ORDER BY
+        CASE WHEN p_sort = 'user_email,asc' THEN a.USER_EMAIL END ASC,
+        CASE WHEN p_sort = 'user_email,desc' THEN a.USER_EMAIL END DESC,
+        CASE WHEN p_sort = 'created_at,asc' THEN a.CREATED_AT END ASC,
+        CASE WHEN p_sort = 'created_at,desc' THEN a.CREATED_AT END DESC,
+        CASE WHEN p_sort = 'updated_at,asc' THEN a.UPDATED_AT END ASC,
+        CASE WHEN p_sort = 'updated_at,desc' THEN a.UPDATED_AT END DESC
+    LIMIT p_size OFFSET offset_value;
+
+
+END //
+
+DELIMITER ;
+
+
+
+/////////////////////////////////////////
+
+
+DELIMITER //
+
+CREATE PROCEDURE portal_dev.sp_delete_app_config (
+    IN p_key VARCHAR(255),
+    OUT p_error_code INT,
+    OUT p_error_message VARCHAR(255)
+)
+BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        SELECT p_error_code AS error_code, p_error_message AS error_message;
+    END;
+
+    IF p_key IS NULL OR TRIM(p_key) = '' THEN
+        SET p_error_code = 400;
+        SET p_error_message = 'Key cannot empty';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Key cannot empty';
+    END IF;
+
+    IF NOT EXISTS (SELECT 1 FROM portal_dev.APP_CONFIG WHERE `key` = p_key) THEN
+        SET p_error_code = 404;
+        SET p_error_message = 'Key does not exist';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Key does not exist';
+    END IF;
+
+    START TRANSACTION;
+
+    DELETE FROM portal_dev.APP_CONFIG WHERE `key` = p_key;
+
+    SET p_error_code = 0;
+    SET p_error_message = 'Delete config successfully';
+
+    COMMIT;
+END //
+
+DELIMITER ;
+////////////////////////////////////////
+
+DELIMITER //
+
+CREATE PROCEDURE portal_dev.sp_update_app_config (
+    IN p_key VARCHAR(255),
+    IN p_value JSON,
+    IN p_description TEXT,
+    OUT p_error_code INT,
+    OUT p_error_message VARCHAR(255)
+)
+BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        SELECT p_error_code AS error_code, p_error_message AS error_message;
+    END;
+
+    IF p_key IS NULL OR TRIM(p_key) = '' THEN
+        SET p_error_code = 400;
+        SET p_error_message = 'Key cannot be empty';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Key cannot be empty';
+    END IF;
+    
+    IF p_value IS NOT NULL AND JSON_VALID(p_value) = 0 THEN
+        SET p_error_code = 400;
+        SET p_error_message = 'Invalid JSON value';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Invalid JSON value';
+    END IF;
+
+    IF NOT EXISTS (SELECT 1 FROM portal_dev.APP_CONFIG WHERE `key` = p_key) THEN
+        SET p_error_code = 404;
+        SET p_error_message = ' Key does not exist.';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Key does not exist.';
+    END IF;
+
+    START TRANSACTION;
+
+    UPDATE portal_dev.APP_CONFIG
+    SET `value` = p_value,
+        `description` = p_description,
+        `updated_at` = NOW()
+    WHERE `key` = p_key;
+
+    SET p_error_code = 0;
+    SET p_error_message = 'Update config successfully';
+
+    COMMIT;
+END //
+
+DELIMITER ;
+
+//////////////////////////////////////////////////
+
+DELIMITER //
+
+CREATE PROCEDURE portal_dev.sp_insert_app_config (
+    IN p_key VARCHAR(255),
+    IN p_value JSON,
+    IN p_description TEXT,
+    OUT p_error_code INT,
+    OUT p_error_message VARCHAR(255)
+)
+BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+	SELECT p_error_code AS error_code, p_error_message AS error_message;
+    END;
+
+    IF p_key IS NULL OR TRIM(p_key) = '' THEN
+        SET p_error_code = 400;
+        SET p_error_message = 'Key cannot be empty';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Key cannot be empty';
+    END IF;
+
+    IF p_value IS NOT NULL AND JSON_VALID(p_value) = 0 THEN
+        SET p_error_code = 400;
+        SET p_error_message = 'Invalid JSON value';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Invalid JSON value';
+    END IF;
+
+    IF EXISTS (SELECT 1 FROM portal_dev.APP_CONFIG WHERE `key` = p_key) THEN
+        SET p_error_code = 409;
+        SET p_error_message = 'Key already exists';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Key already exists';
+    END IF;
+
+    START TRANSACTION;
+
+    INSERT INTO portal_dev.APP_CONFIG (`key`, `value`, `description`, `created_at`, `updated_at`)
+    VALUES (p_key, p_value, p_description, NOW(), NOW());
+
+    -- Thành công
+    SET p_error_code = 0;
+    SET p_error_message = 'INSERT config successfully';
+
+    COMMIT;
+END //
+
+DELIMITER ;
+
+////////////////////////////////////////////////////////
+
+

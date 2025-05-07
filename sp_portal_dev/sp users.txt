@@ -1,0 +1,67 @@
+sp users:
+
+sp_create_user:
+DELIMITER $$
+
+CREATE PROCEDURE sp_create_user(
+    IN p_username VARCHAR(255),
+    IN p_email VARCHAR(255),
+    IN p_password VARCHAR(255)
+)
+BEGIN
+    INSERT INTO users (username, email, password, created_at, updated_at)
+    VALUES (p_username, p_email, p_password, NOW(), NOW());
+END $$
+
+DELIMITER ;
+
+
+////////////////////////////////////
+
+sp_find_user_by_id:
+DELIMITER $$
+
+CREATE PROCEDURE sp_find_user_by_id(
+    IN p_id INT
+)
+BEGIN
+    SELECT id, username, email, password, created_at, updated_at, refresh_token 
+    FROM users WHERE id = p_id;
+END $$
+
+DELIMITER ;
+
+
+//////////////////////////////////////
+sp_find_user_by_email:
+DELIMITER $$
+
+CREATE PROCEDURE sp_find_user_by_email(
+    IN p_email VARCHAR(255)
+)
+BEGIN
+    SELECT id, username, email, password, created_at, updated_at, refresh_token 
+    FROM users WHERE email = p_email;
+END $$
+
+DELIMITER ;
+
+
+////////////////////////////////////////
+
+sp_update_refresh_token:
+DELIMITER $$
+
+CREATE PROCEDURE sp_update_refresh_token(
+    IN p_user_id INT,
+    IN p_refresh_token VARCHAR(255)
+)
+BEGIN
+    UPDATE users
+    SET refresh_token = p_refresh_token, updated_at = NOW()
+    WHERE id = p_user_id;
+END $$
+
+DELIMITER ;
+
+

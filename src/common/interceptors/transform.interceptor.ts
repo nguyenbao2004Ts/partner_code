@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import {
@@ -18,8 +19,8 @@ export class TransformInterceptor implements NestInterceptor {
 
     return next.handle().pipe(
       map((data) => {
-        if (data instanceof Error) {
-          throw data;
+        if (data && typeof data === 'object' && 'statusCode' in data) {
+          return data;
         }
 
         return {

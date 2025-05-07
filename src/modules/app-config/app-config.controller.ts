@@ -4,7 +4,6 @@ import {
   Controller,
   Post,
   Body,
-  BadRequestException,
   UseGuards,
   Param,
   Patch,
@@ -46,16 +45,8 @@ export class AppConfigController {
   @ApiBody({ type: InsertAppConfigDto })
   async insertAppConfig(@Body() body: InsertAppConfigDto) {
     const result = await this.appConfigService.insertAppConfig(body);
-
-    if (result.error_code !== 0) {
-      throw new BadRequestException(result.error_message);
-    }
-
-    return {
-      message: result.error_message,
-    };
+    return result;
   }
-
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Patch('/update/:key')
@@ -67,15 +58,7 @@ export class AppConfigController {
     @Param('key') key: string,
     @Body() body: UpdateAppConfigDto,
   ) {
-    const result = await this.appConfigService.updateAppConfig(key, body);
-
-    if (result.error_code !== 0) {
-      throw new BadRequestException(result.error_message);
-    }
-
-    return {
-      message: result.error_message,
-    };
+    return await this.appConfigService.updateAppConfig(key, body);
   }
 
   @ApiBearerAuth()
@@ -85,15 +68,7 @@ export class AppConfigController {
   @ApiResponse({ status: 200, description: 'Delete successful' })
   @ApiResponse({ status: 400, description: 'Invalid request data' })
   async deleteAppConfig(@Param('key') key: string) {
-    const result = await this.appConfigService.deleteAppConfig(key);
-
-    if (result.error_code !== 0) {
-      throw new BadRequestException(result.error_message);
-    }
-
-    return {
-      message: result.error_message,
-    };
+    return await this.appConfigService.deleteAppConfig(key);
   }
 
   @ApiBearerAuth()

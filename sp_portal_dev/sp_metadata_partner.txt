@@ -1,0 +1,467 @@
+sp_metadata_partner
+
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `SP_DELETE`(IN `p_ID` INT,OUT p_error_code INT,
+    OUT p_error_message VARCHAR(255))
+BEGIN
+    DECLARE v_count INT DEFAULT 0;
+    DECLARE v_data_type VARCHAR(100);
+    DECLARE v_err_msg TEXT;
+
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        SELECT p_error_code AS error_code, p_error_message AS error_message;
+    END;
+
+    START TRANSACTION;
+
+    SELECT COUNT(*), DATA_TYPE INTO v_count, v_data_type
+    FROM common_metadata_partner
+    WHERE ID = p_ID;
+
+    IF v_count = 0 THEN
+        SET p_error_code = 404;
+        SET p_error_message = 'ID does not exist.';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'ID does not exist.';
+    END IF;
+
+    IF v_data_type LIKE 'category%' THEN
+        SELECT COUNT(*) INTO v_count
+        FROM common_metadata_partner
+        WHERE DATA_TYPE = 'service'
+        AND FIND_IN_SET(p_ID, DATA_PARENT_ID);
+
+        IF v_count > 0 THEN
+            SET p_error_code = 409;
+            SET p_error_message = 'Cannot delete category because it is referenced by one or more services.';
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Cannot delete category because it is referenced by one or more services.';
+        END IF;
+
+    ELSEIF v_data_type = 'service' THEN
+        SELECT COUNT(*) INTO v_count
+        FROM common_metadata_partner
+        WHERE DATA_TYPE = 'partner'
+        AND FIND_IN_SET(p_ID, DATA_PARENT_ID);
+
+        IF v_count > 0 THEN
+            SET p_error_code = 409;
+            SET p_error_message = 'Cannot delete service because it is referenced by one or more partners.';
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Cannot delete service because it is referenced by one or more partners.';
+        END IF;
+
+    END IF;
+
+    DELETE FROM common_metadata_partner
+    WHERE ID = p_ID;
+
+    COMMIT;
+
+    SET p_error_code = 200;
+    SET p_error_message = 'Delete successfully';
+END
+
+//////////////////////////////
+
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `SP_GET_LIST`(
+    IN `p_data_type` VARCHAR(50),
+    IN `p_search_id` VARCHAR(50),
+    IN `p_search_name` VARCHAR(255),
+    IN `p_search_name_service` VARCHAR(255),
+    IN `p_search_name_category` VARCHAR(255),
+    IN `p_search_from_date` DATETIME,
+    IN `p_search_to_date` DATETIME,
+    IN `p_page` INT,
+    IN `p_page_size` INT,
+    IN `p_sort` VARCHAR(50)
+)
+BEGIN
+    DECLARE offset_value INT DEFAULT 0;
+
+    SET offset_value = (p_page - 1) * p_page_size;
+
+    IF p_data_type = 'partner' THEN
+        SELECT 
+            p.id,
+            p.DATA_TITLE AS name,
+            s.DATA_TITLE AS service_name,
+            s.id AS service_id,
+            c.DATA_TITLE AS category_name,
+            c.id AS category_id,
+            p.create_at,
+            p.update_at
+        FROM 
+            COMMON_METADATA_PARTNER p
+            JOIN COMMON_METADATA_PARTNER s ON FIND_IN_SET(s.ID, p.DATA_PARENT_ID)
+            JOIN COMMON_METADATA_PARTNER c ON c.ID = s.DATA_PARENT_ID
+        WHERE 
+            p.DATA_TYPE = 'partner'
+            AND (p_search_id IS NULL OR p_search_id = 'all' OR p.ID LIKE CONCAT('%', p_search_id, '%'))
+            AND (p_search_name IS NULL OR p_search_name = 'all' OR p.DATA_TITLE LIKE CONCAT('%', p_search_name, '%'))
+            AND (p_search_name_service IS NULL OR p_search_name_service = 'all' OR s.DATA_TITLE LIKE CONCAT('%', p_search_name_service, '%'))
+            AND (p_search_name_category IS NULL OR p_search_name_category = 'all' OR c.DATA_TITLE LIKE CONCAT('%', p_search_name_category, '%'))
+            AND (p_search_from_date IS NULL OR p_search_from_date='' OR p.CREATE_AT >= p_search_from_date)
+            AND (p_search_to_date IS NULL OR p_search_to_date='' OR p.CREATE_AT <= p_search_to_date)
+        ORDER BY
+            CASE WHEN p_sort = 'ID,ASC' THEN CAST(p.ID AS INT) END ASC,
+            CASE WHEN p_sort = 'ID,DESC' THEN CAST(p.ID AS INT) END DESC,
+            CASE WHEN p_sort = 'NAME,ASC' THEN p.DATA_TITLE END ASC,
+            CASE WHEN p_sort = 'NAME,DESC' THEN p.DATA_TITLE END DESC,
+            CASE WHEN p_sort = 'SERVICE_NAME,ASC' THEN s.DATA_TITLE END ASC,
+            CASE WHEN p_sort = 'SERVICE_NAME,DESC' THEN s.DATA_TITLE END DESC,
+            CASE WHEN p_sort = 'CATEGORY_NAME,ASC' THEN c.DATA_TITLE END ASC,
+            CASE WHEN p_sort = 'CATEGORY_NAME,DESC' THEN c.DATA_TITLE END DESC,
+            CASE WHEN p_sort = 'CREATE_AT,ASC' THEN p.CREATE_AT END ASC,
+            CASE WHEN p_sort = 'CREATE_AT,DESC' THEN p.CREATE_AT END DESC,
+            CASE WHEN p_sort = 'UPDATE_AT,ASC' THEN p.update_at END ASC,
+            CASE WHEN p_sort = 'UPDATE_AT,DESC' THEN p.update_at END DESC
+        LIMIT p_page_size OFFSET offset_value;
+
+    ELSEIF p_data_type = 'service' THEN
+        SELECT 
+            s.id,
+            s.DATA_TITLE AS name,
+            c.DATA_TITLE AS category_name,
+            c.id AS category_id,
+            s.create_at,
+            s.update_at
+        FROM 
+            COMMON_METADATA_PARTNER s
+            JOIN COMMON_METADATA_PARTNER c ON c.ID = s.DATA_PARENT_ID
+        WHERE 
+            s.DATA_TYPE = 'service'
+            AND (p_search_id IS NULL OR p_search_id = 'all' OR s.ID LIKE CONCAT('%', p_search_id, '%'))
+            AND (p_search_name IS NULL OR p_search_name = 'all' OR s.DATA_TITLE LIKE CONCAT('%', p_search_name, '%'))
+            AND (p_search_name_category IS NULL OR p_search_name_category = 'all' OR c.DATA_TITLE LIKE CONCAT('%', p_search_name_category, '%'))
+            AND (p_search_from_date IS NULL OR p_search_from_date='' OR s.CREATE_AT >= p_search_from_date)
+            AND (p_search_to_date IS NULL OR p_search_to_date='' OR s.CREATE_AT <= p_search_to_date)
+        ORDER BY
+            CASE WHEN p_sort = 'ID,ASC' THEN CAST(s.ID AS INT) END ASC,
+            CASE WHEN p_sort = 'ID,DESC' THEN CAST(s.ID AS INT) END DESC,
+            CASE WHEN p_sort = 'NAME,ASC' THEN s.DATA_TITLE END ASC,
+            CASE WHEN p_sort = 'NAME,DESC' THEN s.DATA_TITLE END DESC,
+            CASE WHEN p_sort = 'CATEGORY_NAME,ASC' THEN c.DATA_TITLE END ASC,
+            CASE WHEN p_sort = 'CATEGORY_NAME,DESC' THEN c.DATA_TITLE END DESC,
+            CASE WHEN p_sort = 'CREATE_AT,ASC' THEN s.CREATE_AT END ASC,
+            CASE WHEN p_sort = 'CREATE_AT,DESC' THEN s.CREATE_AT END DESC,
+            CASE WHEN p_sort = 'UPDATE_AT,ASC' THEN s.update_at END ASC,
+            CASE WHEN p_sort = 'UPDATE_AT,DESC' THEN s.update_at END DESC
+        LIMIT p_page_size OFFSET offset_value;
+
+    ELSEIF p_data_type LIKE 'category%' THEN
+        SELECT 
+            id,
+            DATA_TITLE AS name,
+            create_at,
+            update_at
+        FROM 
+            COMMON_METADATA_PARTNER
+        WHERE 
+            DATA_TYPE LIKE 'category%'
+            AND (p_search_id IS NULL OR p_search_id = 'all' OR ID LIKE CONCAT('%', p_search_id, '%'))
+            AND (p_search_name IS NULL OR p_search_name = 'all' OR DATA_TITLE LIKE CONCAT('%', p_search_name, '%'))
+            AND (p_search_from_date IS NULL OR p_search_from_date = '' OR CREATE_AT >= p_search_from_date)
+            AND (p_search_to_date IS NULL OR p_search_to_date = '' OR CREATE_AT <= p_search_to_date)
+        ORDER BY
+            CASE WHEN p_sort = 'ID,ASC' THEN CAST(ID AS INT) END ASC,
+            CASE WHEN p_sort = 'ID,DESC' THEN CAST(ID AS INT) END DESC,
+            CASE WHEN p_sort = 'NAME,ASC' THEN DATA_TITLE END ASC,
+            CASE WHEN p_sort = 'NAME,DESC' THEN DATA_TITLE END DESC,
+            CASE WHEN p_sort = 'CREATE_AT,ASC' THEN CREATE_AT END ASC,
+            CASE WHEN p_sort = 'CREATE_AT,DESC' THEN CREATE_AT END DESC,
+            CASE WHEN p_sort = 'UPDATE_AT,ASC' THEN update_at END ASC,
+            CASE WHEN p_sort = 'UPDATE_AT,DESC' THEN update_at END DESC
+        LIMIT p_page_size OFFSET offset_value;
+
+    ELSE
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Invalid p_data_type. Must be "category", "service", or "partner".';
+    END IF;
+END
+////////////////////////
+CREATE DEFINER=`root`@`localhost` PROCEDURE `SP_INSERT`(IN `p_data_type` VARCHAR(50), IN `p_data_code` VARCHAR(255), IN `p_data_title` VARCHAR(255), IN `p_parent_id` VARCHAR(255), IN `p_data_image` VARCHAR(500), IN `p_data_desc` TEXT, IN `p_referral_name` VARCHAR(255), IN `p_referral_email` VARCHAR(255), IN `p_referral_phone` VARCHAR(50),OUT p_error_code INT,
+    OUT p_error_message VARCHAR(255))
+BEGIN
+    DECLARE total_ids INT DEFAULT 0;
+    DECLARE found_ids INT DEFAULT 0;
+    DECLARE category_count INT DEFAULT 0;
+
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        SELECT p_error_code AS error_code, p_error_message AS error_message;
+    END;
+
+    IF p_data_code IS NULL OR p_data_code = '' THEN
+        SET p_error_code = 400;
+        SET p_error_message = 'data code cannot empty';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Data code cannot be empty.';
+    END IF;
+
+    IF p_data_title IS NULL OR p_data_title = '' THEN
+        SET p_error_code = 400;
+        SET p_error_message = 'data title cannot empty';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Data title cannot be empty.';
+    END IF;
+
+    IF p_data_type NOT IN ('category', 'service', 'partner') THEN
+        SET p_error_code = 400;
+        SET p_error_message = 'Invalid data type. Must be "category", "service", or "partner".';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Invalid data type. Must be "category", "service", or "partner".';
+    END IF;
+
+    IF EXISTS (
+        SELECT 1 FROM portal_dev.COMMON_METADATA_PARTNER 
+        WHERE DATA_TYPE LIKE CONCAT('%',p_data_type,'%') AND DATA_CODE = p_data_code
+    ) THEN
+        SET p_error_code = 409;
+        SET p_error_message = 'Data code already exists ';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT ='Data code already exists  ';
+    END IF;
+
+    START TRANSACTION;
+
+    IF p_data_type = 'category' THEN
+        INSERT INTO portal_dev.COMMON_METADATA_PARTNER (
+            DATA_TYPE, DATA_CODE, DATA_TITLE, DATA_PARENT_ID, DATA_IMAGE, DATA_DESC, CREATE_AT, UPDATE_AT,
+            REFERRAL_NAME, REFERRAL_EMAIL, REFERRAL_PHONE
+        )
+        VALUES (
+            'category', p_data_code, p_data_title, '0', p_data_image, p_data_desc,
+            CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, p_referral_name, p_referral_email, p_referral_phone
+        );
+
+    ELSEIF p_data_type = 'service' THEN
+        IF p_parent_id IS NULL OR p_parent_id = '' THEN
+            SET p_error_code = 400;
+            SET p_error_message = 'Parent category ID cannot be empty.';
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Parent category ID cannot be empty.';
+        END IF;
+
+        SELECT COUNT(*) INTO category_count
+        FROM portal_dev.COMMON_METADATA_PARTNER
+        WHERE DATA_TYPE LIKE 'category%' AND ID = p_parent_id;
+
+        IF category_count = 0 OR LOCATE(',', p_parent_id) > 0 THEN
+            SET p_error_code = 404;
+            SET p_error_message = 'Category ID does not exist or is invalid.';
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Category ID does not exist or is invalid.';
+        END IF;
+
+        INSERT INTO portal_dev.COMMON_METADATA_PARTNER (
+            DATA_TYPE, DATA_CODE, DATA_TITLE, DATA_PARENT_ID, DATA_IMAGE, DATA_DESC, CREATE_AT, UPDATE_AT,
+            REFERRAL_NAME, REFERRAL_EMAIL, REFERRAL_PHONE
+        )
+        VALUES (
+            'service', p_data_code, p_data_title, p_parent_id, p_data_image, p_data_desc,
+            CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, p_referral_name, p_referral_email, p_referral_phone
+        );
+
+    ELSEIF p_data_type = 'partner' THEN
+        IF p_parent_id IS NULL OR p_parent_id = '' THEN
+            SET p_error_code = 400;
+            SET p_error_message = 'Parent service ID cannot be empty.';
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Parent service ID cannot be empty.';
+        END IF;
+
+        SET total_ids = (LENGTH(p_parent_id) - LENGTH(REPLACE(p_parent_id, ',', ''))) + 1;
+        SELECT COUNT(*) INTO found_ids
+        FROM portal_dev.COMMON_METADATA_PARTNER s
+        WHERE s.DATA_TYPE = 'service' AND FIND_IN_SET(s.ID, p_parent_id);
+
+        IF found_ids != total_ids THEN
+            SET p_error_code = 404;
+            SET p_error_message = 'One or more Service IDs do not exist.';
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'One or more Service IDs do not exist.';
+        END IF;
+
+        INSERT INTO portal_dev.COMMON_METADATA_PARTNER (
+            DATA_TYPE, DATA_CODE, DATA_TITLE, DATA_PARENT_ID, DATA_IMAGE, DATA_DESC, CREATE_AT, UPDATE_AT,
+            REFERRAL_NAME, REFERRAL_EMAIL, REFERRAL_PHONE
+        )
+        VALUES (
+            'partner', p_data_code, p_data_title, p_parent_id, p_data_image, p_data_desc,
+            CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, p_referral_name, p_referral_email, p_referral_phone
+        );
+
+    END IF;
+
+    COMMIT;
+    SET p_error_code = 200;
+    SET p_error_message = 'Inserted successfully';
+END
+
+//////////////////////////////
+CREATE DEFINER=`root`@`localhost` PROCEDURE `SP_TOTAL`(IN p_data_type VARCHAR(50))
+BEGIN
+DECLARE v_err_msg TEXT;
+
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        GET DIAGNOSTICS CONDITION 1 v_err_msg = MESSAGE_TEXT;
+        ROLLBACK;
+        SELECT CONCAT('Total failed: ', v_err_msg) AS ErrorMessage;
+    END;
+    IF p_data_type IS NULL OR p_data_type = '' THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Data type cannot be empty.';
+    END IF;
+    IF p_data_type NOT IN ('category', 'service', 'partner') THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Invalid data type. Must be "category", "service", or "partner".';
+    END IF;
+  IF p_data_type LIKE 'category%' THEN
+  SELECT COUNT(id) AS total
+  FROM common_metadata_partner
+  WHERE DATA_TYPE LIKE 'category%';
+  
+  ELSEIF p_data_type = 'service' THEN
+  SELECT COUNT(id) AS total
+  FROM common_metadata_partner
+  WHERE DATA_TYPE ='service';
+  
+  ELSEIF p_data_type = 'partner' THEN
+  SELECT COUNT(id) AS total
+  FROM common_metadata_partner
+  WHERE DATA_TYPE ='partner';
+  END IF;
+END
+////////////////////////////
+CREATE DEFINER=`root`@`localhost` PROCEDURE `SP_UPDATE`(
+    IN p_ID INT,
+    IN p_DATA_TYPE VARCHAR(100),
+    IN p_DATA_CODE VARCHAR(100),
+    IN p_DATA_TITLE VARCHAR(255),
+    IN p_DATA_PARENT_ID VARCHAR(255),
+    IN p_DATA_IMAGE VARCHAR(500),
+    IN p_DATA_DESC TEXT,
+    IN p_REFERRAL_NAME VARCHAR(255),
+    IN p_REFERRAL_EMAIL VARCHAR(255),
+    IN p_REFERRAL_PHONE VARCHAR(50),
+    OUT p_error_code INT,
+    OUT p_error_message VARCHAR(255)
+)
+BEGIN
+    DECLARE v_count INT DEFAULT 0;
+    DECLARE v_total_ids INT DEFAULT 0;
+    DECLARE v_found_ids INT DEFAULT 0;
+    DECLARE v_actual_data_type VARCHAR(100);
+    DECLARE v_err_msg TEXT;
+
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+         SELECT p_error_code AS error_code, p_error_message AS error_message;
+    END;
+
+    START TRANSACTION;
+
+    SELECT COUNT(*), DATA_TYPE INTO v_count, v_actual_data_type
+    FROM common_metadata_partner
+    WHERE ID = p_ID;
+
+    IF v_count = 0 THEN
+        SET p_error_code = 404;
+        SET p_error_message = 'ID does not exist.';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'ID does not exist.';
+    END IF;
+
+    IF p_DATA_TYPE NOT IN ('category', 'service', 'partner') THEN
+        SET p_error_code = 400;
+        SET p_error_message = 'Invalid DATA_TYPE. Must be category, service, or partner.';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Invalid DATA_TYPE. Must be category, service, or partner.';
+    END IF;
+
+    IF (p_DATA_TYPE = 'category' AND v_actual_data_type NOT LIKE 'category%') OR
+       (p_DATA_TYPE = 'service' AND v_actual_data_type != 'service') OR
+       (p_DATA_TYPE = 'partner' AND v_actual_data_type != 'partner') THEN
+        SET p_error_code = 409;
+        SET p_error_message = 'DATA_TYPE does not match the record type.';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'DATA_TYPE does not match the record type.';
+    END IF;
+
+    IF p_DATA_CODE IS NOT NULL AND p_DATA_CODE != '' THEN
+        SELECT COUNT(*) INTO v_count
+        FROM common_metadata_partner
+        WHERE DATA_CODE = p_DATA_CODE 
+        AND ID != p_ID 
+        AND (
+            (p_DATA_TYPE = 'category' AND DATA_TYPE LIKE 'category%') OR
+            (p_DATA_TYPE = 'service' AND DATA_TYPE = 'service') OR
+            (p_DATA_TYPE = 'partner' AND DATA_TYPE = 'partner')
+        );
+
+        IF v_count > 0 THEN
+            SET p_error_code = 409;
+            SET p_error_message = 'DATA_CODE already exists for another record.';
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'DATA_CODE already exists for another record.';
+        END IF;
+    END IF;
+
+    IF p_DATA_TITLE IS NULL OR p_DATA_TITLE = '' THEN
+        SET p_error_code = 400;
+        SET p_error_message = 'DATA_TITLE cannot be empty.';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'DATA_TITLE cannot be empty.';
+    END IF;
+
+    IF p_DATA_TYPE = 'category' THEN
+        IF p_DATA_PARENT_ID != '0' THEN
+            SET p_error_code = 400;
+            SET p_error_message = 'Category must have DATA_PARENT_ID = 0.';
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Category must have DATA_PARENT_ID = 0.';
+        END IF;
+    ELSEIF p_DATA_TYPE = 'service' THEN
+        IF p_DATA_PARENT_ID IS NULL OR p_DATA_PARENT_ID = '' THEN
+            SET p_error_code = 400;
+            SET p_error_message = 'Service must have a valid Category ID as parent.';
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Service must have a valid Category ID as parent.';
+        END IF;
+
+        SELECT COUNT(*) INTO v_found_ids
+        FROM common_metadata_partner
+        WHERE DATA_TYPE LIKE 'category%' AND ID = p_DATA_PARENT_ID;
+        IF v_found_ids = 0 OR LOCATE(',', p_DATA_PARENT_ID) > 0 THEN
+            SET p_error_code = 404;
+            SET p_error_message = 'Service must have a valid Category ID as parent.';
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Category ID does not exist or invalid.';
+        END IF;
+    ELSEIF p_DATA_TYPE = 'partner' THEN
+        IF p_DATA_PARENT_ID IS NULL OR p_DATA_PARENT_ID = '' THEN
+            SET p_error_code = 400;
+            SET p_error_message = 'Partner must have valid Service ID(s) as parent.';
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Partner must have valid Service ID(s) as parent.';
+        END IF;
+        SET v_total_ids = (LENGTH(p_DATA_PARENT_ID) - LENGTH(REPLACE(p_DATA_PARENT_ID, ',', ''))) + 1;
+        IF p_DATA_PARENT_ID = '0' THEN
+            SET v_total_ids = 1;
+        END IF;
+        SELECT COUNT(*) INTO v_found_ids
+        FROM common_metadata_partner
+        WHERE DATA_TYPE = 'service'
+        AND FIND_IN_SET(ID, p_DATA_PARENT_ID);
+
+        IF v_found_ids != v_total_ids THEN
+            SET p_error_code = 404;
+            SET p_error_message = 'One or more Service IDs do not exist.';
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'One or more Service IDs do not exist.';
+        END IF;
+    END IF;
+
+    UPDATE common_metadata_partner
+    SET
+        DATA_CODE = p_DATA_CODE,
+        DATA_TITLE = p_DATA_TITLE,
+        DATA_PARENT_ID = p_DATA_PARENT_ID,
+        DATA_IMAGE = p_DATA_IMAGE,
+        DATA_DESC = p_DATA_DESC,
+        REFERRAL_NAME = p_REFERRAL_NAME,
+        REFERRAL_EMAIL = p_REFERRAL_EMAIL,
+        REFERRAL_PHONE = p_REFERRAL_PHONE
+    WHERE ID = p_ID;
+
+    COMMIT;
+
+    SET p_error_code = 200;
+    SET p_error_message = ' Update successfully';
+END
+
+/////////////////////////////////////
