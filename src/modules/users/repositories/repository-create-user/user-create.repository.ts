@@ -7,7 +7,7 @@ export class UserCreateRepository {
   constructor(private readonly spService: StoredProcedureService) {}
 
   async createUser(username: string, email: string, password: string) {
-    return await this.spService.callProcedure('sp_create_user', [
+    return await this.spService.callProcedure('SP_USER_INSERT', [
       username,
       email,
       password,

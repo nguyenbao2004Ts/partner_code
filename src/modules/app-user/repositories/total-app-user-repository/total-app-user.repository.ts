@@ -5,11 +5,11 @@ import { Injectable } from '@nestjs/common';
 import { StoredProcedureService } from 'src/database/database-Sp.service';
 
 @Injectable()
-export class TotalListAppConfigRepository {
+export class TotalAppUserRepository {
   constructor(private readonly spService: StoredProcedureService) {}
 
-  async getTotalAppConfig(): Promise<{ total: number }> {
-    const result = await this.spService.callProcedure('SP_APP_CONFIG_TOTAL');
+  async getTotalAppUser(): Promise<{ total: number }> {
+    const result = await this.spService.callProcedure('SP_APP_USER_TOTAL');
     return result[0];
   }
 }

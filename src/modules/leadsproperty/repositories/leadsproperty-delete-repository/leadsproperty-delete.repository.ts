@@ -8,17 +8,13 @@ import {
 import { StoredProcedureService } from 'src/database/database-Sp.service';
 
 @Injectable()
-export class InsertAppConfigRepository {
+export class LeadspropertyDeleteRepository {
   constructor(private readonly spService: StoredProcedureService) {}
 
-  async insertAppConfig(
-    key: string,
-    value: string,
-    description?: string,
-  ): Promise<{ message: string }> {
+  async delete(lead_property_id: string): Promise<{ message: string }> {
     const result = await this.spService.callProcedureWithOutParams(
-      'SP_APP_CONFIG_INSERT',
-      [key, value, description || null],
+      'SP_LEADSPROPERTY_DELETE',
+      [lead_property_id],
       ['p_error_code', 'p_error_message'],
     );
 

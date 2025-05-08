@@ -13,7 +13,7 @@ export class DeleteListRepository {
 
   async deleteItem(id: number) {
     const result = await this.spService.callProcedureWithOutParams(
-      'SP_DELETE',
+      'SP_COMMON_METADATA_PARTNER_DELETE',
       [id],
       ['p_error_code', 'p_error_message'],
     );

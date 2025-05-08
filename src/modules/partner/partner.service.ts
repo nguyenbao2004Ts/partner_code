@@ -13,6 +13,7 @@ import {
   GetListDto,
   InsertListDto,
   UpdateListDto,
+  TotalDto,
 } from './dto';
 import {
   GetCategoryRepository,
@@ -233,7 +234,7 @@ export class PartnerService {
     return this.deleteListRepo.deleteItem(id);
   }
 
-  async getTotalByType(data_type: string) {
-    return this.totalRepo.getTotalByType(data_type);
+  async getTotalByType(dto: TotalDto) {
+    return this.totalRepo.getTotalByType(dto);
   }
 }

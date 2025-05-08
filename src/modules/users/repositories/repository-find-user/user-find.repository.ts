@@ -9,7 +9,7 @@ export class UserFindRepository {
   constructor(private readonly spService: StoredProcedureService) {}
 
   async findByEmail(email: string) {
-    const result = await this.spService.callProcedure('sp_find_user_by_email', [
+    const result = await this.spService.callProcedure('SP_USER_FIND_BY_EMAIL', [
       email,
     ]);
     return result[0];

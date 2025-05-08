@@ -18,7 +18,7 @@ export class GetListRepository {
     size = 10,
     sort = 'ID,ASC',
   ) {
-    return this.spService.callProcedure('SP_GET_LIST', [
+    return this.spService.callProcedure('SP_COMMON_METADATA_PARTNER_GET_LIST', [
       data_type,
       id,
       name,

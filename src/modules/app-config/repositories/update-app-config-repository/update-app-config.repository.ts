@@ -17,7 +17,7 @@ export class UpdateAppConfigRepository {
     description?: string,
   ): Promise<{ message: string }> {
     const result = await this.spService.callProcedureWithOutParams(
-      'sp_update_app_config',
+      'SP_APP_CONFIG_UPDATE',
       [key, value, description || null],
       ['p_error_code', 'p_error_message'],
     );

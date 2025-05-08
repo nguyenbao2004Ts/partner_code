@@ -23,7 +23,7 @@ export class InsertListRepository {
     referral_phone: string | null,
   ) {
     const result = await this.spService.callProcedureWithOutParams(
-      'SP_INSERT',
+      'SP_COMMON_METADATA_PARTNER_INSERT',
       [
         data_type,
         data_code,

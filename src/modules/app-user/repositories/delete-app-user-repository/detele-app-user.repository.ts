@@ -8,22 +8,18 @@ import {
 import { StoredProcedureService } from 'src/database/database-Sp.service';
 
 @Injectable()
-export class InsertAppConfigRepository {
+export class DeleteAppUserRepository {
   constructor(private readonly spService: StoredProcedureService) {}
 
-  async insertAppConfig(
-    key: string,
-    value: string,
-    description?: string,
-  ): Promise<{ message: string }> {
+  async deleteAppUser(user_email: string): Promise<{ message: string }> {
     const result = await this.spService.callProcedureWithOutParams(
-      'SP_APP_CONFIG_INSERT',
-      [key, value, description || null],
+      'SP_APP_USER_DELETE',
+      [user_email],
       ['p_error_code', 'p_error_message'],
     );
 
     switch (result.p_error_code) {
-      case 200:
+      case 0:
         return { message: result.p_error_message };
       case 400:
         throw new BadRequestException(result.p_error_message);
@@ -32,7 +28,7 @@ export class InsertAppConfigRepository {
       case 409:
         throw new ConflictException(result.p_error_message);
       default:
-        throw new BadRequestException('Unknown error');
+        throw new BadRequestException('Unknown error occurred');
     }
   }
 }

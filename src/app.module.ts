@@ -9,6 +9,8 @@ import { PartnerModule } from './modules/partner/partner.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { AppConfigModule } from './modules/app-config/app-config.module';
+import { AppUserModule } from './modules/app-user/app-user.module';
+import { LeadspropertyModule } from './modules/leadsproperty/leadsproperty.module';
 import User from './modules/users/entity/User';
 
 @Module({
@@ -33,6 +35,8 @@ import User from './modules/users/entity/User';
     UsersModule,
     AuthModule,
     AppConfigModule,
+    AppUserModule,
+    LeadspropertyModule,
   ],
   controllers: [AppController],
   providers: [AppService],

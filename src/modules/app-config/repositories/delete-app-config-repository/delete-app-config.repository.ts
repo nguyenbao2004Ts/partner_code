@@ -13,7 +13,7 @@ export class DeleteAppConfigRepository {
 
   async deleteAppConfig(key: string): Promise<{ message: string }> {
     const result = await this.spService.callProcedureWithOutParams(
-      'sp_delete_app_config',
+      'SP_APP_CONFIG_DELETE',
       [key],
       ['p_error_code', 'p_error_message'],
     );

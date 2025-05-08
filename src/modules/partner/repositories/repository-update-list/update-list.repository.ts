@@ -24,7 +24,7 @@ export class UpdateListRepository {
     referral_phone: string | null,
   ) {
     const result = await this.spService.callProcedureWithOutParams(
-      'SP_UPDATE',
+      'SP_COMMON_METADATA_PARTNER_UPDATE',
       [
         id,
         data_type,

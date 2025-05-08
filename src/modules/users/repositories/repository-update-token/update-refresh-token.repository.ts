@@ -7,7 +7,7 @@ export class UpdateRefreshTokenRepository {
   constructor(private readonly spService: StoredProcedureService) {}
 
   async updateRefreshToken(userId: number, refreshToken: string | null) {
-    return await this.spService.callProcedure('sp_update_refresh_token', [
+    return await this.spService.callProcedure('SP_UPDATE_REFRESH_TOKEN', [
       userId,
       refreshToken,
     ]);

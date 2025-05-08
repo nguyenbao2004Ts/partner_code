@@ -9,7 +9,7 @@ export class UserFindIdRepository {
   constructor(private readonly spService: StoredProcedureService) {}
 
   async findById(id: number) {
-    const result = await this.spService.callProcedure('sp_find_user_by_id', [
+    const result = await this.spService.callProcedure('SP_USER_FIND_BY_ID', [
       id,
     ]);
     return result[0];
