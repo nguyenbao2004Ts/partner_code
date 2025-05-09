@@ -11,6 +11,7 @@ import { UsersModule } from './modules/users/users.module';
 import { AppConfigModule } from './modules/app-config/app-config.module';
 import { AppUserModule } from './modules/app-user/app-user.module';
 import { LeadspropertyModule } from './modules/leadsproperty/leadsproperty.module';
+import { LeadsModule } from './modules/leads/leads.module';
 import User from './modules/users/entity/User';
 
 @Module({
@@ -37,6 +38,7 @@ import User from './modules/users/entity/User';
     AppConfigModule,
     AppUserModule,
     LeadspropertyModule,
+    LeadsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
