@@ -41,7 +41,7 @@ import {
 import { JwtAuthGuard } from 'src/guards/jwt-auth.guards';
 
 @ApiBearerAuth('access-token')
-@Controller('partner/v1')
+@Controller('common_metadata_partner/v1')
 @ApiTags('Partner')
 export class PartnerController {
   constructor(private readonly partnerService: PartnerService) {}
@@ -254,7 +254,7 @@ export class PartnerController {
     };
   }
 
-  @ApiTags('List')
+  @ApiTags('Common-metadata-partner')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Get('/get-list')
@@ -272,7 +272,7 @@ export class PartnerController {
     };
   }
 
-  @ApiTags('List')
+  @ApiTags('Common-metadata-partner')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Post('/insert-list')
@@ -292,7 +292,7 @@ export class PartnerController {
     };
   }
 
-  @ApiTags('List')
+  @ApiTags('Common-metadata-partner')
   @Patch('/list/:id')
   @ApiOperation({ summary: 'Update a category, service, or partner' })
   @ApiParam({
@@ -309,7 +309,7 @@ export class PartnerController {
     };
   }
 
-  @ApiTags('List')
+  @ApiTags('Common-metadata-partner')
   @Delete('/list/:id')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
@@ -327,7 +327,7 @@ export class PartnerController {
     };
   }
 
-  @ApiTags('List')
+  @ApiTags('Common-metadata-partner')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Get('/total')

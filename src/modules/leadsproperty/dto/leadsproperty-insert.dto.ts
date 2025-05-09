@@ -66,11 +66,11 @@ export class LeadspropertyInsertDto {
   @IsNumber()
   latitude?: number;
 
-  @ApiProperty()
+  @ApiProperty({ example: ['https://ksplat.link/1', 'https://ksplat.link/2'] })
   @IsOptional()
   ksplat_urls?: any;
 
-  @ApiProperty()
+  @ApiProperty({ example: ['https://video1.link/1', 'https://video1.link/2'] })
   @IsOptional()
   captured_video_urls?: any;
 

@@ -12,6 +12,7 @@ import { AppConfigModule } from './modules/app-config/app-config.module';
 import { AppUserModule } from './modules/app-user/app-user.module';
 import { LeadspropertyModule } from './modules/leadsproperty/leadsproperty.module';
 import { LeadsModule } from './modules/leads/leads.module';
+import { ApiLogModule } from './modules/api-log/api-log.module';
 import User from './modules/users/entity/User';
 
 @Module({
@@ -39,6 +40,7 @@ import User from './modules/users/entity/User';
     AppUserModule,
     LeadspropertyModule,
     LeadsModule,
+    ApiLogModule,
   ],
   controllers: [AppController],
   providers: [AppService],
